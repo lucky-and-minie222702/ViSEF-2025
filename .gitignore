@@ -1,5 +1,8 @@
 dataset
+yolo_dataset
+models
 *.txt
 *.ipynb
 *__pycache__
 *.Ds_Store
+*.vscode
