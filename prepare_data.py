@@ -10,11 +10,11 @@ from glob import glob
 RAW_ROOT = "dataset"
 OUT_ROOT = "yolo_dataset"
 
-TEST_NEGATIVE_COUNT = 2500
-TRAIN_NEGATIVE_COUNT = 150
+TEST_NEGATIVE_COUNT = 1000
+TRAIN_NEGATIVE_COUNT = 2500
 TRAIN_RATIO = 0.9
 MIN_AREA_RATIO = 0.01   # 1%
-MAX_AREA_RATIO = 0.25   # 25%
+MAX_AREA_RATIO = 0.10   # 20%
 
 CLASS_ID = 0  # single class: polyp
 
