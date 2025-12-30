@@ -1,5 +1,4 @@
 import os
-from tkinter.tix import MAX
 import cv2
 import yaml
 import shutil
@@ -11,14 +10,11 @@ from glob import glob
 RAW_ROOT = "dataset"
 OUT_ROOT = "yolo_dataset"
 
-TEST_NEGATIVE_COUNT = 1000
+TEST_NEGATIVE_COUNT = 2500
+TRAIN_NEGATIVE_COUNT = 150
 TRAIN_RATIO = 0.9
-
-MIN_CONTOUR_RATIO = 0.03           # 3%
-NO_TIGHTEN_THRESHOLD = 0.05        # 5%
-BOX_TIGHTEN_RATIO = 0.85           # 85% 
-MAX_CONTOUR_THRESHOLD = 0.7        # 70%
-LARGE_CONTOUR_TIGHTEN_RATIO = 0.7  # 70% 
+MIN_AREA_RATIO = 0.01   # 1%
+MAX_AREA_RATIO = 0.25   # 25%
 
 CLASS_ID = 0  # single class: polyp
 
@@ -31,41 +27,31 @@ def ensure_dirs():
         os.makedirs(f"{OUT_ROOT}/labels/{split}", exist_ok=True)
 
 
-def mask_to_bboxes(mask_path):
+def mask_to_bboxes(mask_path): 
     mask = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
-    h, w = mask.shape
-
-    _, bin_mask = cv2.threshold(mask, 1, 255, cv2.THRESH_BINARY)
-    contours, _ = cv2.findContours(
-        bin_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
-    )
-
-    total_area = w * w
-    boxes = []
-
-    for cnt in contours:
-        area = cv2.contourArea(cnt)
-        if area < MIN_CONTOUR_RATIO * total_area:
+    h, w = mask.shape 
+    
+    _, bin_mask = cv2.threshold(mask, 1, 255, cv2.THRESH_BINARY) 
+    contours, _ = cv2.findContours( bin_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE ) 
+    
+    total_area = w * w 
+    boxes = [] 
+    
+    for cnt in contours: 
+        x, y, bw, bh = cv2.boundingRect(cnt) 
+        
+        area = bw * bh
+        if area < total_area * MIN_AREA_RATIO or area > total_area * MAX_AREA_RATIO:
             continue
 
-        x, y, bw, bh = cv2.boundingRect(cnt)
+        cx = (x + bw / 2) / w 
+        cy = (y + bh / 2) / h 
 
-        cx = (x + bw / 2) / w
-        cy = (y + bh / 2) / h
-        bw /= w
-        bh /= h
-        
-        if area > MAX_CONTOUR_THRESHOLD * total_area:
-            bw *= LARGE_CONTOUR_TIGHTEN_RATIO
-            bh *= LARGE_CONTOUR_TIGHTEN_RATIO
-        elif (area * BOX_TIGHTEN_RATIO) >= total_area * NO_TIGHTEN_THRESHOLD:
-            bw *= BOX_TIGHTEN_RATIO**(1/2)
-            bh *= BOX_TIGHTEN_RATIO**(1/2)
-
+        bw /= w 
+        bh /= h 
         boxes.append((CLASS_ID, cx, cy, bw, bh))
 
-    return boxes
-
+    return boxes, len(boxes) > 0
 
 def write_label(label_path, boxes):
     with open(label_path, "w") as f:
@@ -88,12 +74,15 @@ def process_positive_dataset(dataset_name, split_map):
         name = os.path.splitext(os.path.basename(img_path))
         basename = name[0]
         name = ''.join(name)
-        mask_path = f"{mask_dir}/{name}"
-
+        mask_path = f"{mask_dir}/{basename}.jpg"
+        mask_path = f"{mask_dir}/{basename}.png"
+        
         if not os.path.exists(mask_path):
             continue
 
-        boxes = mask_to_bboxes(mask_path)
+        boxes, qualified = mask_to_bboxes(mask_path)
+        if not qualified:
+            continue
 
         label_tmp = f"/tmp/{basename}.txt"
         write_label(label_tmp, boxes)
@@ -157,7 +146,9 @@ def main():
             name = ''.join(name)
             mask_path = f"{RAW_ROOT}/{dataset}/masks/{name}"
 
-            boxes = mask_to_bboxes(mask_path)
+            boxes, qualified = mask_to_bboxes(mask_path)
+            if not qualified:
+                continue
 
             label_tmp = f"/tmp/{basename}.txt"
             write_label(label_tmp, boxes)
@@ -167,10 +158,9 @@ def main():
 
     # negatives → train/val
     random.shuffle(neg_remaining)
-    split_idx = int(len(neg_remaining) * TRAIN_RATIO)
 
-    process_negative_images(neg_remaining[:split_idx], "train")
-    process_negative_images(neg_remaining[split_idx:], "val")
+    process_negative_images(neg_remaining[:TRAIN_NEGATIVE_COUNT:], "train")
+    process_negative_images(neg_remaining[TRAIN_NEGATIVE_COUNT::], "val")
 
     # data.yaml file
     data_yaml = {

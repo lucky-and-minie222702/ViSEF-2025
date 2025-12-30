@@ -1,7 +1,7 @@
 from ultralytics import YOLO
 
 def main():
-    model = YOLO("yolo11s.pt")  
+    model = YOLO("yolo11m.pt")  
 
     # Train
     model.train(
@@ -25,11 +25,11 @@ def main():
         hsv_v = 0.005,
         degrees = 3.6, 
         translate = 0.05,
-        scale = 0.8,
+        scale = 0.75,
         perspective = 0.00001,
         flipud = 0.0, # no vertical flip
         fliplr = 0.5, # 50% horizontal flip
-        mosaic = 0.25,
+        mosaic = 0.3,
 
         # Val
         val = True,
