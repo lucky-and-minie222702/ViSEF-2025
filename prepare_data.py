@@ -140,22 +140,27 @@ def main():
     train_pos = all_pos[:split_idx]
     val_pos = all_pos[split_idx:]
 
-    # for split_name, subset in [("train", train_pos), ("val", val_pos)]:
-    #     for dataset, img_path in tqdm(subset, desc=split_name):
-    #         name = os.path.splitext(os.path.basename(img_path))
-    #         basename = name[0]
-    #         name = ''.join(name)
-    #         mask_path = f"{RAW_ROOT}/{dataset}/masks/{name}"
+    for split_name, subset in [("train", train_pos), ("val", val_pos)]:
+        c = 0
+        for dataset, img_path in tqdm(subset, desc=split_name):
+            name = os.path.splitext(os.path.basename(img_path))
+            basename = name[0]
+            name = ''.join(name)
+            mask_path = f"{RAW_ROOT}/{dataset}/masks/{name}"
 
-    #         boxes, qualified = mask_to_bboxes(mask_path)
-    #         if not qualified:
-    #             continue
+            boxes, qualified = mask_to_bboxes(mask_path)
+            if not qualified:
+                continue
 
-    #         label_tmp = f"/tmp/{basename}.txt"
-    #         write_label(label_tmp, boxes)
+            label_tmp = f"/tmp/{basename}.txt"
+            write_label(label_tmp, boxes)
 
-    #         copy_sample(img_path, label_tmp, split_name)
-    #         os.remove(label_tmp)
+            copy_sample(img_path, label_tmp, split_name)
+            os.remove(label_tmp)
+            
+            c += 1
+            if c == 10:
+                break
 
     # negatives → train/val
     random.shuffle(neg_remaining)
