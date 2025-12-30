@@ -41,7 +41,6 @@ def main():
         seed = 27022009,
         
         cls = 0.0,
-        nc = 1,
     )
 
     # Final evaluation
