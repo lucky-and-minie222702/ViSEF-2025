@@ -136,12 +136,13 @@ def main():
     for split_name, subset in [("train", train_pos), ("val", val_pos)]:
         for dataset, img_path in tqdm(subset, desc=split_name):
             name = os.path.splitext(os.path.basename(img_path))
+            basename = name[0]
             name = ''.join(name)
             mask_path = f"{RAW_ROOT}/{dataset}/masks/{name}"
 
             boxes = mask_to_bboxes(mask_path)
 
-            label_tmp = f"/tmp/{name}.txt"
+            label_tmp = f"/tmp/{basename}.txt"
             write_label(label_tmp, boxes)
 
             copy_sample(img_path, label_tmp, split_name)
