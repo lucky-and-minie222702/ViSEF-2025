@@ -10,7 +10,7 @@ def main():
         imgsz = 640,
         batch = 64,
         device = 0,
-        workers = 4,
+        workers = 3,
         # pretrained = True,
 
         optimizer="AdamW",
