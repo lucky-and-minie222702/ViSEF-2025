@@ -19,7 +19,7 @@ def main():
         weight_decay = 0.00025,
         warmup_epochs = 3,
 
-        multi_scale = True,
+        # multi_scale = True,
         hsv_h = 0.005,
         hsv_s = 0.005,
         hsv_v = 0.005,
