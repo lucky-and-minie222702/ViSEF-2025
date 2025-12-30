@@ -136,7 +136,7 @@ def main():
     for split_name, subset in [("train", train_pos), ("val", val_pos)]:
         for dataset, img_path in tqdm(subset, desc=split_name):
             name = os.path.splitext(os.path.basename(img_path))
-            mask_path = f"{RAW_ROOT}/{dataset}/masks/{"".join(name)}"
+            mask_path = f"{RAW_ROOT}/{dataset}/masks/{''.join(name)}"
 
             boxes = mask_to_bboxes(mask_path)
 
