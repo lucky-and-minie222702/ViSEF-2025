@@ -10,8 +10,8 @@ from glob import glob
 RAW_ROOT = "dataset"
 OUT_ROOT = "yolo_dataset"
 
-TEST_NEGATIVE_COUNT = 2500
-TRAIN_NEGATIVE_COUNT = 150
+TEST_NEGATIVE_COUNT = 2000
+TRAIN_NEGATIVE_COUNT = 300
 TRAIN_RATIO = 0.9
 MIN_AREA_RATIO = 0.01   # 1%
 MAX_AREA_RATIO = 0.25   # 25%
@@ -34,7 +34,7 @@ def mask_to_bboxes(mask_path):
     _, bin_mask = cv2.threshold(mask, 1, 255, cv2.THRESH_BINARY) 
     contours, _ = cv2.findContours( bin_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE ) 
     
-    total_area = h * w 
+    total_area = w * w 
     boxes = [] 
     
     for cnt in contours: 
@@ -141,7 +141,6 @@ def main():
     val_pos = all_pos[split_idx:]
 
     for split_name, subset in [("train", train_pos), ("val", val_pos)]:
-        c = 0
         for dataset, img_path in tqdm(subset, desc=split_name):
             name = os.path.splitext(os.path.basename(img_path))
             basename = name[0]
@@ -157,10 +156,6 @@ def main():
 
             copy_sample(img_path, label_tmp, split_name)
             os.remove(label_tmp)
-            
-            c += 1
-            if c == 10:
-                break
 
     # negatives → train/val
     random.shuffle(neg_remaining)

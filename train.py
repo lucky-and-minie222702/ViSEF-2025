@@ -43,6 +43,7 @@ def main():
         seed = 27022009,
         
         cls = 0.0,
+        conf = 0.8,
     )
 
     # Final evaluation
