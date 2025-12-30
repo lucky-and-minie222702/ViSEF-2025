@@ -10,11 +10,11 @@ from glob import glob
 RAW_ROOT = "dataset"
 OUT_ROOT = "yolo_dataset"
 
-TEST_NEGATIVE_COUNT = 1000
-TRAIN_NEGATIVE_COUNT = 2500
+TEST_NEGATIVE_COUNT = 2500
+TRAIN_NEGATIVE_COUNT = 150
 TRAIN_RATIO = 0.9
 MIN_AREA_RATIO = 0.01   # 1%
-MAX_AREA_RATIO = 0.10   # 20%
+MAX_AREA_RATIO = 0.25   # 25%
 
 CLASS_ID = 0  # single class: polyp
 
@@ -34,7 +34,7 @@ def mask_to_bboxes(mask_path):
     _, bin_mask = cv2.threshold(mask, 1, 255, cv2.THRESH_BINARY) 
     contours, _ = cv2.findContours( bin_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE ) 
     
-    total_area = w * w 
+    total_area = h * w 
     boxes = [] 
     
     for cnt in contours: 
@@ -49,6 +49,7 @@ def mask_to_bboxes(mask_path):
 
         bw /= w 
         bh /= h 
+        
         boxes.append((CLASS_ID, cx, cy, bw, bh))
 
     return boxes, len(boxes) > 0
@@ -139,22 +140,22 @@ def main():
     train_pos = all_pos[:split_idx]
     val_pos = all_pos[split_idx:]
 
-    for split_name, subset in [("train", train_pos), ("val", val_pos)]:
-        for dataset, img_path in tqdm(subset, desc=split_name):
-            name = os.path.splitext(os.path.basename(img_path))
-            basename = name[0]
-            name = ''.join(name)
-            mask_path = f"{RAW_ROOT}/{dataset}/masks/{name}"
+    # for split_name, subset in [("train", train_pos), ("val", val_pos)]:
+    #     for dataset, img_path in tqdm(subset, desc=split_name):
+    #         name = os.path.splitext(os.path.basename(img_path))
+    #         basename = name[0]
+    #         name = ''.join(name)
+    #         mask_path = f"{RAW_ROOT}/{dataset}/masks/{name}"
 
-            boxes, qualified = mask_to_bboxes(mask_path)
-            if not qualified:
-                continue
+    #         boxes, qualified = mask_to_bboxes(mask_path)
+    #         if not qualified:
+    #             continue
 
-            label_tmp = f"/tmp/{basename}.txt"
-            write_label(label_tmp, boxes)
+    #         label_tmp = f"/tmp/{basename}.txt"
+    #         write_label(label_tmp, boxes)
 
-            copy_sample(img_path, label_tmp, split_name)
-            os.remove(label_tmp)
+    #         copy_sample(img_path, label_tmp, split_name)
+    #         os.remove(label_tmp)
 
     # negatives → train/val
     random.shuffle(neg_remaining)
