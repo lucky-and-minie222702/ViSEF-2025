@@ -6,18 +6,20 @@ def main():
     # Train
     model.train(
         data="yolo_dataset/data.yaml",
-        epochs = 200,
+        epochs = 250,
         imgsz = 640,
         batch = 64,
         device = 0,
         workers = 3,
         pretrained = True,
 
-        optimizer = "AdamW",
-        lr0 = 1e-3,
-        lrf = 1e-2,
-        weight_decay = 1e-5,
+        optimizer = "Adam",
+        lr0 = 0.001,
+        lrf = 0.01,
+        weight_decay = 0.00025,
+        warmup_epochs = 10,
 
+        multi_scale = True,
         hsv_h = 0.005,
         hsv_s = 0.005,
         hsv_v = 0.005,
