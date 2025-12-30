@@ -8,9 +8,9 @@ def main():
         data="yolo_dataset/data.yaml",
         epochs = 200,
         imgsz = 640,
-        batch = 64,
+        batch = 32,
         device = 0,
-        workers = 3,
+        workers = 2,
         pretrained = True,
 
         optimizer = "Adam",
