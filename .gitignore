@@ -1,0 +1,5 @@
+dataset
+*.txt
+*.ipynb
+*__pycache__
+*.Ds_Store
