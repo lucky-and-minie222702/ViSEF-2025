@@ -1,4 +1,5 @@
 import os
+from tkinter.tix import MAX
 import cv2
 import yaml
 import shutil
@@ -12,7 +13,12 @@ OUT_ROOT = "yolo_dataset"
 
 TEST_NEGATIVE_COUNT = 1000
 TRAIN_RATIO = 0.9
-MIN_CONTOUR_RATIO = 0.05   # 5%
+
+MIN_CONTOUR_RATIO = 0.03           # 3%
+NO_TIGHTEN_THRESHOLD = 0.05        # 5%
+BOX_TIGHTEN_RATIO = 0.85           # 85% 
+MAX_CONTOUR_THRESHOLD = 0.7        # 70%
+LARGE_CONTOUR_TIGHTEN_RATIO = 0.7  # 70% 
 
 CLASS_ID = 0  # single class: polyp
 
@@ -34,7 +40,7 @@ def mask_to_bboxes(mask_path):
         bin_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
     )
 
-    total_area = np.sum(bin_mask > 0)
+    total_area = w * w
     boxes = []
 
     for cnt in contours:
@@ -48,6 +54,13 @@ def mask_to_bboxes(mask_path):
         cy = (y + bh / 2) / h
         bw /= w
         bh /= h
+        
+        if area > MAX_CONTOUR_THRESHOLD * total_area:
+            bw *= LARGE_CONTOUR_TIGHTEN_RATIO
+            bh *= LARGE_CONTOUR_TIGHTEN_RATIO
+        elif (area * BOX_TIGHTEN_RATIO) >= total_area * NO_TIGHTEN_THRESHOLD:
+            bw *= BOX_TIGHTEN_RATIO**(1/2)
+            bh *= BOX_TIGHTEN_RATIO**(1/2)
 
         boxes.append((CLASS_ID, cx, cy, bw, bh))
 
