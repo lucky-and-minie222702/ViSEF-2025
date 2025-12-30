@@ -17,7 +17,7 @@ def main():
         lr0 = 0.001,
         lrf = 0.01,
         weight_decay = 0.00025,
-        warmup_epochs = 10,
+        warmup_epochs = 3,
 
         multi_scale = True,
         hsv_h = 0.005,
