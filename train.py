@@ -11,7 +11,7 @@ def main():
         batch = 64,
         device = 0,
         workers = 3,
-        # pretrained = True,
+        pretrained = True,
 
         optimizer = "Adam",
         lr0 = 0.001,
@@ -25,8 +25,8 @@ def main():
         hsv_v = 0.005,
         degrees = 3.6, 
         translate = 0.05,
-        scale = 0.1,
-        perspective = 0.0003,
+        scale = 0.8,
+        perspective = 0.00001,
         flipud = 0.0, # no vertical flip
         fliplr = 0.5, # 50% horizontal flip
         mosaic = 0.25,
