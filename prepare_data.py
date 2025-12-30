@@ -161,7 +161,6 @@ def main():
         "val": "images/val",
         "test": "images/test",
         "names": {0: "polyp"},
-        "nc": 1,
     }
 
     with open(f"{OUT_ROOT}/data.yaml", "w") as f:
