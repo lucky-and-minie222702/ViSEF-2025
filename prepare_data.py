@@ -72,15 +72,17 @@ def process_positive_dataset(dataset_name, split_map):
     images = sorted(glob(f"{img_dir}/*"))
 
     for img_path in tqdm(images, desc=dataset_name):
-        name = os.path.splitext(os.path.basename(img_path))[0]
-        mask_path = f"{mask_dir}/{name}.png"
+        name = os.path.splitext(os.path.basename(img_path))
+        basename = name[0]
+        name = ''.join(name)
+        mask_path = f"{mask_dir}/{name}"
 
         if not os.path.exists(mask_path):
             continue
 
         boxes = mask_to_bboxes(mask_path)
 
-        label_tmp = f"/tmp/{name}.txt"
+        label_tmp = f"/tmp/{basename}.txt"
         write_label(label_tmp, boxes)
 
         split = split_map[dataset_name]
@@ -91,9 +93,11 @@ def process_positive_dataset(dataset_name, split_map):
 
 def process_negative_images(image_paths, split):
     for img_path in tqdm(image_paths, desc=f"negative-{split}"):
-        name = os.path.splitext(os.path.basename(img_path))[0]
+        name = os.path.splitext(os.path.basename(img_path))
+        basename = name[0]
+        name = ''.join(name)
 
-        label_tmp = f"/tmp/{name}.txt"
+        label_tmp = f"/tmp/{basename}.txt"
         open(label_tmp, "w").close()  # empty label
 
         copy_sample(img_path, label_tmp, split)
