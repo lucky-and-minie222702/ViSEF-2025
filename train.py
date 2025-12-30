@@ -11,12 +11,12 @@ def main():
         batch = 64,
         device = 0,
         workers = 3,
-        # pretrained = True,
+        pretrained = True,
 
-        optimizer="AdamW",
+        optimizer = "AdamW",
         lr0 = 1e-3,
         lrf = 1e-2,
-        weight_decay = 5e-4,
+        weight_decay = 1e-5,
 
         hsv_h = 0.005,
         hsv_s = 0.005,
