@@ -1,7 +1,7 @@
 from ultralytics import YOLO
 
 config = {
-    "conf": 0.025,
+    "conf": 0.01,
 }
 
 def main():
@@ -11,8 +11,8 @@ def main():
     model.train(
         data="yolo_dataset/data.yaml",
         epochs = 100 + 1,
-        imgsz = 640,
-        batch = 32,
+        imgsz = 1280,
+        batch = 16,
         device = 0,
         workers = 2,
         pretrained = True,
