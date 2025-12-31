@@ -10,13 +10,16 @@ from glob import glob
 RAW_ROOT = "dataset"
 OUT_ROOT = "yolo_dataset"
 
-TEST_NEGATIVE_COUNT = 2000
-TRAIN_NEGATIVE_COUNT = 300
-TRAIN_RATIO = 0.9
-MIN_AREA_RATIO = 0.01   # 1%
-MAX_AREA_RATIO = 0.25   # 25%
+TEST_NEGATIVE_COUNT = 1000
+TRAIN_NEGATIVE_COUNT = 100
+VAL_NEGATIVE_COUNT = 400
 
-CLASS_ID = 0  # single class: polyp
+TRAIN_RATIO = 0.9
+MIN_AREA_RATIO = 0.01
+MAX_AREA_RATIO = 0.25
+BOX_TIGHTEN_RATIO = 0.8 
+
+CLASS_ID = 0 
 
 random.seed(27022009)
 
@@ -49,6 +52,9 @@ def mask_to_bboxes(mask_path):
 
         bw /= w 
         bh /= h 
+        
+        bw *= BOX_TIGHTEN_RATIO**(1/2)
+        bh *= BOX_TIGHTEN_RATIO**(1/2)
         
         boxes.append((CLASS_ID, cx, cy, bw, bh))
 
@@ -161,7 +167,7 @@ def main():
     random.shuffle(neg_remaining)
 
     process_negative_images(neg_remaining[:TRAIN_NEGATIVE_COUNT:], "train")
-    process_negative_images(neg_remaining[TRAIN_NEGATIVE_COUNT::], "val")
+    process_negative_images(neg_remaining[TRAIN_NEGATIVE_COUNT:TRAIN_NEGATIVE_COUNT + VAL_NEGATIVE_COUNT:], "val")
 
     # data.yaml file
     data_yaml = {
