@@ -12,7 +12,7 @@ def main():
     model.train(
         data="yolo_dataset/data.yaml",
         epochs = 100 + 1,
-        imgsz = 1280,
+        imgsz = 960,
         batch = 8,
         nbs = 64,           
         pretrained = True,
