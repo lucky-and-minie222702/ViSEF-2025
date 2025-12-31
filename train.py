@@ -6,7 +6,7 @@ config = {
 }
 
 def main():
-    model = YOLO("yolo11x.pt")  
+    model = YOLO("yolo11m.pt")  
 
     # Train
     model.train(
