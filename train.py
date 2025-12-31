@@ -17,13 +17,12 @@ def main():
         nbs = 64,           
         pretrained = True,
         
-        # multiple GPUs
-        device = [0, 1],
+        device = 0,
 
         optimizer = "Adam",
         lr0 = 0.001,
         lrf = 0.01,
-        weight_decay = 0.00025,
+        weight_decay = 0.0005,
         warmup_epochs = 3,
 
         # multi_scale = True,
