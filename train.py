@@ -43,7 +43,7 @@ def main():
         mixup = 0.5,
         
         # loss
-        cls = 5.0,
+        cls = 3.0,
 
         # Val
         val = True,
