@@ -1,5 +1,7 @@
 from ultralytics import YOLO
 
+CONF = 0.5
+
 def main():
     model = YOLO("yolo11m.pt")  
 
@@ -36,18 +38,15 @@ def main():
         save = True,
         save_period = 10,
         project = "runs/polyp_yolo",
-        name = "yolov8s_det",
+        name = "yolo_det",
 
         patience = 25,
         deterministic = True,
         seed = 27022009,
-        
-        cls = 0.0,
-        conf = 0.5,
     )
 
     # Final evaluation
-    metrics = model.val()
+    metrics = model.val(conf = CONF)
     print(metrics)
 
 if __name__ == "__main__":
