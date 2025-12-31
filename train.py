@@ -43,8 +43,7 @@ def main():
         mixup = 0.5,
         
         # loss
-        cls = 3.0,
-        label_smoothing = 0.1,
+        cls = 0.1,
 
         # Val
         val = True,
