@@ -44,7 +44,6 @@ def main():
         
         # loss
         cls = 3.0,
-        label_smoothing = 0.1,
 
         # Val
         val = True,
