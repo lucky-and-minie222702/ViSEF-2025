@@ -25,6 +25,7 @@ def main():
         weight_decay = 0.00025,
         warmup_epochs = 3,
         dfl = 2,
+        cls = 0.25,
 
         # multi_scale = True,
         hsv_h = 0.01,
