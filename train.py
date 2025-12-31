@@ -25,15 +25,13 @@ def main():
         lrf = 0.01,
         weight_decay = 0.00025,
         warmup_epochs = 3,
-        dfl = 2,
-        cls = 1,
         
         max_det = 3,
 
         # multi_scale = True,
-        hsv_h = 0.01,
-        hsv_s = 0.9,
-        hsv_v = 0.6,
+        hsv_h = 0.015,
+        hsv_s = 0.8,
+        hsv_v = 0.5,
         degrees = 3.6, 
         translate = 0.05,   
         scale = 0.75,
@@ -43,6 +41,12 @@ def main():
         mosaic = 0.5,
         copy_paste = 0.5,
         mixup = 0.5,
+        
+        # loss
+        fl_gamma = 2.0,
+        cls = 2.0,
+        box = 10.0,
+        label_smoothing = 0.1,
 
         # Val
         val = True,
