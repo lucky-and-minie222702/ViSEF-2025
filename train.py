@@ -17,7 +17,7 @@ def main():
         pretrained = True,
         
         # multiple GPUs
-        device = 0,
+        device = [0, 1],
 
         optimizer = "Adam",
         lr0 = 0.001,
