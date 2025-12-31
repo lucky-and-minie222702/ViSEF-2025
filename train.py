@@ -43,9 +43,7 @@ def main():
         mixup = 0.5,
         
         # loss
-        fl_gamma = 2.0,
-        cls = 2.0,
-        box = 10.0,
+        cls = 3.0
         label_smoothing = 0.1,
 
         # Val
