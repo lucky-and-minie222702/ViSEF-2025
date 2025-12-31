@@ -14,7 +14,6 @@ def main():
         imgsz = 1280,
         batch = 16,
         device = 0,
-        workers = 2,
         pretrained = True,
 
         optimizer = "Adam",
