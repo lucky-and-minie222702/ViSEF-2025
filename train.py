@@ -1,8 +1,8 @@
 from ultralytics import YOLO
 
 config = {
-    "conf": 0.01,
-    "iou": 0.5,
+    "conf": 0.05,
+    "iou": 0.4,
 }
 
 def main():
