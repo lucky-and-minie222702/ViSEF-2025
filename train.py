@@ -16,6 +16,10 @@ def main():
         nbs = 64,           
         device = 0,
         pretrained = True,
+        
+        # multiple GPUs
+        device = [0, 1],
+        sync_bn = True,
 
         optimizer = "Adam",
         lr0 = 0.001,
