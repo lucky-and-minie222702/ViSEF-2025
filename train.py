@@ -1,7 +1,7 @@
 from ultralytics import YOLO
 
 config = {
-    "conf": 0.01,
+    "conf": 0.005,
 }
 
 def main():
@@ -13,7 +13,7 @@ def main():
         epochs = 100 + 1,
         imgsz = 1280,
         batch = -1,
-        nbs = 64,
+        nbs = 64,           
         device = 0,
         pretrained = True,
 
