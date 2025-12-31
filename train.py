@@ -11,7 +11,7 @@ def main():
     # Train
     model.train(
         data="yolo_dataset/data.yaml",
-        epochs = 200,
+        epochs = 200 + 1,
         imgsz = 640,
         batch = 32,
         device = 0,
@@ -42,11 +42,11 @@ def main():
         # Val
         val = True,
         save = True,
-        save_period = 10,
+        save_period = 20,
         project = "runs/polyp_yolo",
         name = "yolo_det",
 
-        patience = 25,
+        patience = 20,
         deterministic = True,
         seed = 27022009,
         
