@@ -1,8 +1,8 @@
 from ultralytics import YOLO
 
 config = {
-    "conf": 0.2,
-    "iou": 0.6,
+    "conf": 0.1,
+    "iou": 0.5,
 }
 
 def main():
@@ -23,6 +23,7 @@ def main():
         lrf = 0.01,
         weight_decay = 0.00025,
         warmup_epochs = 3,
+        dfl = 2,
 
         # multi_scale = True,
         hsv_h = 0.01,
@@ -49,7 +50,8 @@ def main():
         deterministic = True,
         seed = 27022009,
         
-        dfl = 2,
+        save_conf = True,
+        
         
         **config
     )
