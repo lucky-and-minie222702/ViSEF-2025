@@ -1,19 +1,19 @@
 from ultralytics import YOLO
 
 config = {
-    "conf": 0.1,
+    "conf": 0.0001,
     "iou": 0.45 
 }
 
 def main():
-    model = YOLO("yolo12x.pt")  
+    model = YOLO("yolo11x.pt")  
 
     # Train
     model.train(
         data="yolo_dataset/data.yaml",
         epochs = 100 + 1,
-        imgsz = 960,
-        batch = 8,
+        imgsz = 1280,
+        batch = 16,
         nbs = 64,           
         pretrained = True,
         
