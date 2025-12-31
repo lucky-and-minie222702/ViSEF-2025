@@ -1,9 +1,12 @@
 from ultralytics import YOLO
 
-CONF = 0.5
+config = {
+    "conf": 0.2,
+    "iou": 0.6,
+}
 
 def main():
-    model = YOLO("yolo11m.pt")  
+    model = YOLO("yolo11x.pt")  
 
     # Train
     model.train(
@@ -22,16 +25,18 @@ def main():
         warmup_epochs = 3,
 
         multi_scale = True,
-        hsv_h = 0.005,
-        hsv_s = 0.005,
-        hsv_v = 0.005,
+        hsv_h = 0.01,
+        hsv_s = 0.9,
+        hsv_v = 0.6,
         degrees = 3.6, 
         translate = 0.05,
         scale = 0.75,
         perspective = 0.00001,
         flipud = 0.0, # no vertical flip
         fliplr = 0.5, # 50% horizontal flip
-        mosaic = 0.3,
+        mosaic = 0.5,
+        copy_paste = 0.5,
+        mixup = 0.5,
 
         # Val
         val = True,
@@ -43,10 +48,14 @@ def main():
         patience = 25,
         deterministic = True,
         seed = 27022009,
+        
+        dfl = 2,
+        
+        **config
     )
 
     # Final evaluation
-    metrics = model.val(conf = CONF)
+    metrics = model.val(**config)
     print(metrics)
 
 if __name__ == "__main__":
