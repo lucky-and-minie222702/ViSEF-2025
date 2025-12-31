@@ -13,7 +13,7 @@ def main():
         data="yolo_dataset/data.yaml",
         epochs = 200,
         imgsz = 640,
-        batch = 16,
+        batch = 32,
         device = 0,
         workers = 2,
         pretrained = True,
@@ -24,7 +24,7 @@ def main():
         weight_decay = 0.00025,
         warmup_epochs = 3,
 
-        multi_scale = True,
+        # multi_scale = True,
         hsv_h = 0.01,
         hsv_s = 0.9,
         hsv_v = 0.6,
