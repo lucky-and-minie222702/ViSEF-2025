@@ -6,7 +6,7 @@ config = {
 }
 
 def main():
-    model = YOLO("yolo11x.pt")  
+    model = YOLO("yolo12x.pt")  
 
     # Train
     model.train(
@@ -25,8 +25,6 @@ def main():
         lrf = 0.01,
         weight_decay = 0.00025,
         warmup_epochs = 3,
-        
-        max_det = 3,
 
         # multi_scale = True,
         hsv_h = 0.015,
@@ -41,14 +39,11 @@ def main():
         mosaic = 0.5,
         copy_paste = 0.5,
         mixup = 0.5,
-        
-        # loss
-        cls = 5.0,
 
         # Val
         val = True,
         save = True,
-        save_period = 20,
+        save_period = 10,
         project = "runs/polyp_yolo",
         name = "yolo_det",
 
