@@ -14,7 +14,6 @@ def main():
         imgsz = 1280,
         batch = -1,
         nbs = 64,           
-        device = 0,
         pretrained = True,
         
         # multiple GPUs
