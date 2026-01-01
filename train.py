@@ -6,14 +6,14 @@ config = {
 }
 
 def main():
-    model = YOLO("yolo11m.pt")  
+    model = YOLO("yolo11s.pt")  
 
     # Train
     model.train(
         data="yolo_dataset/data.yaml",
         epochs = 300 + 1,
         imgsz = 1280,
-        batch = 16,
+        batch = 32,
         nbs = 64,           
         pretrained = True,
         
@@ -43,7 +43,7 @@ def main():
         val = True,
         save = True,
         save_period = 30,
-        project = "runs/polyp_yolo",
+        project = "yolo11s/polyp_yolo",
         name = "yolo_det",
 
         patience = 20,
