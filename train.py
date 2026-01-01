@@ -17,7 +17,7 @@ def main():
         nbs = 32,           
         pretrained = True,
         
-        device = [0, 1],
+        device = 0,
         box = 10.0,
 
         optimizer = "Adam",
