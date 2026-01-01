@@ -13,8 +13,8 @@ def main():
         data = "yolo_dataset/data.yaml",
         epochs = 300 + 1,
         imgsz = 640,
-        batch = 64,
-        nbs = 64,           
+        batch = 32,
+        nbs = 32,           
         pretrained = True,
         
         device = [0, 1],
