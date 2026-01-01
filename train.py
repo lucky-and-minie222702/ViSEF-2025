@@ -36,7 +36,6 @@ def main():
         perspective = 0.00001,
         flipud = 0.0, # no vertical flip
         fliplr = 0.5, # 50% horizontal flip
-        mosaic = 0.0,
         copy_paste = 0.5,
         mosaic = 0.2,
         close_mosaic = 10,
