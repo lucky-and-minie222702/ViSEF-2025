@@ -38,12 +38,12 @@ def main():
         fliplr = 0.5, # 50% horizontal flip
         copy_paste = 0.5,
         mosaic = 0.2,
-        close_mosaic = 10,
+        close_mosaic = 20,
 
         # Val
         val = True,
         save = True,
-        save_period = 30,
+        save_period = 10,
         project = "yolo11s/polyp_yolo",
         name = "yolo_det",
 
