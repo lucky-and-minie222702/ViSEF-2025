@@ -6,7 +6,7 @@ config = {
 }
 
 def main():
-    model = YOLO("yolo11s.pt")  
+    model = YOLO("yolo11m.pt")  
 
     # Train
     model.train(
@@ -19,7 +19,6 @@ def main():
         
         device = 0,
         box = 10.0,
-        tal_topk = 20,
 
         optimizer = "Adam",
         lr0 = 0.001,
@@ -44,7 +43,7 @@ def main():
         val = True,
         save = True,
         save_period = 30,
-        project = "yolo11s_taltopk/polyp_yolo",
+        project = "yolo11m/polyp_yolo",
         name = "yolo_det",
 
         patience = 1_000_000,
