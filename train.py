@@ -19,6 +19,7 @@ def main():
         
         device = 0,
         box = 10.0,
+        tal_topk = 20,
 
         optimizer = "Adam",
         lr0 = 0.001,
