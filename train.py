@@ -1,17 +1,20 @@
 from ultralytics import YOLO
+import sys
 
 config = {
-    "conf": 0.1,
+    "conf": 0.0001,
     "iou": 0.45 
 }
 
+variant = sys.argv[1]
+
 def main():
-    model = YOLO("yolo11m.pt")  
+    model = YOLO(f"yolo11{variant}.pt")  
 
     # Train
     model.train(
         data = "yolo_dataset/data.yaml",
-        epochs = 300 + 1,
+        epochs = 400 + 1,
         imgsz = 640,
         batch = 32,
         nbs = 32,           
@@ -19,6 +22,8 @@ def main():
         
         device = 0,
         box = 10.0,
+        dfl = 2.0,
+        cls = 0.1,
 
         optimizer = "Adam",
         lr0 = 0.001,
@@ -37,13 +42,13 @@ def main():
         fliplr = 0.5, # 50% horizontal flip
         copy_paste = 0.5,
         mosaic = 0.2,
-        close_mosaic = 60 + 1,
+        close_mosaic = 100 + 1,
 
         # Val
         val = True,
         save = True,
-        save_period = 30,
-        project = "yolo11m/polyp_yolo",
+        save_period = 50,
+        project = f"yolo11{variant}/polyp_yolo",
         name = "yolo_det",
 
         patience = 1_000_000,
@@ -55,10 +60,6 @@ def main():
         
         **config
     )
-
-    # Final evaluation
-    metrics = model.val(**config)
-    print(metrics)
 
 if __name__ == "__main__":
     main()

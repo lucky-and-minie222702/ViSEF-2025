@@ -7,3 +7,4 @@ models
 *.Ds_Store
 *.vscode
 runs
+*res*
