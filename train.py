@@ -37,7 +37,7 @@ def main():
         hsv_v = 0.5,
         degrees = 180, 
         translate = 0.05,   
-        scale = 0.4,
+        scale = 0.7,
         perspective = 0.00001,
         flipud = 0.0, # no vertical flip
         fliplr = 0.5, # 50% horizontal flip
