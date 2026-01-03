@@ -2,9 +2,9 @@ from ultralytics import YOLO
 import sys
 
 epoch_map =  {
-    "s": 300,
-    "m": 400,
-    "l": 500,
+    "s": 400,
+    "m": 500,
+    "l": 600,
 }
 
 variant = sys.argv[1]
@@ -32,12 +32,12 @@ def main():
         weight_decay = 0.0005,
         warmup_epochs = 3,
 
-        hsv_h = 0.015,
+        hsv_h = 0.02,
         hsv_s = 0.8,
         hsv_v = 0.5,
         degrees = 180, 
         translate = 0.05,   
-        scale = 0.7,
+        scale = 0.6,
         perspective = 0.00001,
         flipud = 0.0, # no vertical flip
         fliplr = 0.5, # 50% horizontal flip
