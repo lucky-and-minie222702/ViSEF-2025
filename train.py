@@ -1,11 +1,6 @@
 from ultralytics import YOLO
 import sys
 
-config = {
-    "conf": 0.0001,
-    "iou": 0.45 
-}
-
 epoch_map =  {
     "s": 300,
     "m": 400,
