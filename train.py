@@ -6,15 +6,21 @@ config = {
     "iou": 0.45 
 }
 
+epoch_map =  {
+    "s": 300,
+    "m": 400,
+    "l": 500,
+}
+
 variant = sys.argv[1]
 
-def main():
+def main(): 
     model = YOLO(f"yolo11{variant}.pt")  
 
     # Train
     model.train(
         data = "yolo_dataset/data.yaml",
-        epochs = 400 + 1,
+        epochs = epoch_map[variant] + 1,
         imgsz = 640,
         batch = 32,
         nbs = 32,           
