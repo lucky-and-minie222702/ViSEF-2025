@@ -23,8 +23,6 @@ def main():
         
         device = 0,
         box = 10.0,
-        dfl = 2.0,
-        cls = 0.3,
 
         optimizer = "Adam",
         lr0 = 0.001,
