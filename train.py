@@ -36,10 +36,10 @@ def main():
         degrees = 180, 
         translate = 0.05,   
         scale = 0.6,
-        perspective = 0.00001,
-        flipud = 0.0, # no vertical flip
-        fliplr = 0.5, # 50% horizontal flip
-        copy_paste = 0.5,
+        perspective = 0.0001,
+        flipud = 0.4, # vertical flip
+        fliplr = 0.4, # orizontal flip
+        copy_paste = 0.4,
         mosaic = 0.2,
         close_mosaic = 100,
 
