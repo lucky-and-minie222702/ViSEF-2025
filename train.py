@@ -15,10 +15,10 @@ def main():
     # Train
     model.train(
         data = "yolo_dataset/data.yaml",
-        epochs = epoch_map[variant] + 1,
+        epochs = epoch_map[variant],
         imgsz = 640,
-        batch = 64,
-        nbs = 64,           
+        batch = 32,
+        nbs = 32,           
         pretrained = True,
         
         device = 0,
@@ -43,7 +43,7 @@ def main():
         fliplr = 0.5, # 50% horizontal flip
         copy_paste = 0.5,
         mosaic = 0.2,
-        close_mosaic = 100 + 1,
+        close_mosaic = 100,
 
         # Val
         val = True,
@@ -57,9 +57,6 @@ def main():
         seed = 27022009,
         
         save_conf = True,
-        
-        
-        **config
     )
 
 if __name__ == "__main__":
