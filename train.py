@@ -17,8 +17,8 @@ def main():
         data = "yolo_dataset/data.yaml",
         epochs = epoch_map[variant],
         imgsz = 640,
-        batch = 32,
-        nbs = 32,           
+        batch = 64,
+        nbs = 64,           
         pretrained = True,
         
         device = 0,
