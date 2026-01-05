@@ -1,12 +1,5 @@
 from ultralytics import YOLO
 import sys
-
-epoch_map =  {
-    "s": 500,
-    "m": 700,
-    "l": 900,
-}
-
 variant = sys.argv[1]
 
 def main(): 
@@ -15,7 +8,7 @@ def main():
     # Train
     model.train(
         data = "yolo_dataset/data.yaml",
-        epochs = epoch_map[variant],
+        epochs = 600,
         imgsz = 640,
         batch = 64,
         nbs = 64,           
