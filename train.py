@@ -1,9 +1,12 @@
 from ultralytics import YOLO
 import sys
-variant = sys.argv[1]
+
+version = sys.argv[1]
+variant = sys.argv[2]
+
 
 def main(): 
-    model = YOLO(f"yolo11{variant}.pt")  
+    model = YOLO(f"yolo{version}{variant}.pt")  
 
     # Train
     model.train(
@@ -41,7 +44,7 @@ def main():
         val = True,
         save = True,
         save_period = 50,
-        project = f"yolo11{variant}/polyp_yolo",
+        project = f"yolo{version}{variant}/polyp_yolo",
         name = "yolo_det",
 
         patience = 1_000_000,
