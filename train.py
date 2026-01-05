@@ -19,7 +19,7 @@ def main():
         dfl = 2.0,
 
         optimizer = "Adam",
-        lr0 = 0.00085,
+        lr0 = 0.0009,
         lrf = 0.01,
         weight_decay = 0.0005,
         warmup_epochs = 3,
@@ -27,14 +27,14 @@ def main():
         hsv_h = 0.02,
         hsv_s = 0.75,
         hsv_v = 0.45,
-        degrees = 45, 
-        translate = 0.05,   
-        scale = 0.6,
+        degrees = 1.8, 
+        translate = 0.01,   
+        scale = 0.2,
         perspective = 0.0001,
-        flipud = 0.4, # vertical flip
-        fliplr = 0.4, # orizontal flip
+        flipud = 0.5, # vertical flip
+        fliplr = 0.5, # horizontal flip
         copy_paste = 0.4,
-        mosaic = 0.2,
+        mosaic = 0.3,
         close_mosaic = 100,
 
         # Val
