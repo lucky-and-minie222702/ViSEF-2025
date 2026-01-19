@@ -8,3 +8,7 @@ models
 *.vscode
 runs
 *res*
+*.png
+*.jpg
+*.mp4*
+*video*

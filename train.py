@@ -33,7 +33,7 @@ def main():
         degrees = 1.8, 
         translate = 0.01,   
         scale = 0.2,
-        perspective = 0.0001,
+        perspective = 0.0001,   
         flipud = 0.5, # vertical flip
         fliplr = 0.5, # horizontal flip
         copy_paste = 0.4,
