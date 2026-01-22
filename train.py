@@ -1,6 +1,7 @@
 from ultralytics import YOLO
 import sys
 
+
 version = sys.argv[1]
 variant = sys.argv[2]
 
