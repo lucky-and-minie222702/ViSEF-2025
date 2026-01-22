@@ -4,7 +4,6 @@ import sys
 version = sys.argv[1]
 variant = sys.argv[2]
 
-
 def main(): 
     model = YOLO(f"yolo{version}{variant}.pt")  
 
