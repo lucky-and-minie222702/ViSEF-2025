@@ -81,7 +81,12 @@ def process_positive_dataset(dataset_name, split_map):
         name = os.path.splitext(os.path.basename(img_path))
         basename = name[0]
         name = ''.join(name)
+        
         mask_path = f"{mask_dir}/{basename}.jpg"
+        
+        if not os.path.exists(mask_path):
+            continue
+        
         mask_path = f"{mask_dir}/{basename}.png"
         
         if not os.path.exists(mask_path):

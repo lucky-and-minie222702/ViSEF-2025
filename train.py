@@ -19,11 +19,10 @@ def main():
         pretrained = True,
         
         device = 0,
+        freeze = 4,
 
-        optimizer = "Adam",
-        lr0 = 0.009,
-        lrf = 0.01,
-        weight_decay = 0.0005,
+        optimizer = "MuSGD",
+        lr0 = 0.01,
         warmup_epochs = 3,
 
         hsv_h = 0.006,
