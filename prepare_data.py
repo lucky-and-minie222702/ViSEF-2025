@@ -90,7 +90,7 @@ def process_positive_dataset(dataset_name, split_map):
         boxes, qualified = mask_to_bboxes(mask_path)
         if not qualified:
             continue
-
+        
         label_tmp = f"/tmp/{basename}.txt"
         write_label(label_tmp, boxes)
 
