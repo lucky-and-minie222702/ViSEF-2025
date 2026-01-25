@@ -20,8 +20,8 @@ DEVICE = 0
 
 model = YOLO(MODEL_PATH)
 
-start = sys.argv[1]
-end = sys.argv[2]
+start = int(sys.argv[1])
+end = int(sys.argv[2])
 
 for i in range(start, end+1):
     INPUT_VIDEO = f"videos/{i}.mp4"
