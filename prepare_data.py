@@ -90,7 +90,6 @@ def process_positive_dataset(dataset_name, split_map):
         if not os.path.exists(mask_path):
             continue
         
-
         boxes, qualified = mask_to_bboxes(mask_path)
         if not qualified:
             continue
@@ -156,7 +155,13 @@ def main():
             name = os.path.splitext(os.path.basename(img_path))
             basename = name[0]
             name = ''.join(name)
-            mask_path = f"{RAW_ROOT}/{dataset}/masks/{name}"
+            mask_path = f"{RAW_ROOT}/{dataset}/masks/{basename}.jpg"
+        
+            if not os.path.exists(mask_path):
+                mask_path = f"{RAW_ROOT}/{dataset}/masks/{basename}.png"
+        
+            if not os.path.exists(mask_path):
+                continue
 
             boxes, qualified = mask_to_bboxes(mask_path)
             if not qualified:
