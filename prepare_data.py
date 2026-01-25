@@ -10,8 +10,8 @@ from glob import glob
 RAW_ROOT = "dataset"
 OUT_ROOT = "yolo_dataset"
 
-TEST_NEGATIVE_COUNT = 900
-TRAIN_NEGATIVE_COUNT = 500
+TEST_NEGATIVE_COUNT = 500
+TRAIN_NEGATIVE_COUNT = 900
 VAL_NEGATIVE_COUNT = 500
 
 TRAIN_RATIO = 0.9
@@ -117,9 +117,9 @@ def main():
     ensure_dirs()
 
     # Test set
-    split_map = {"BKAI": "test"}
+    split_map = {"CVC-ClinicDB": "test"}
 
-    process_positive_dataset("BKAI", split_map)
+    process_positive_dataset("CVC-ClinicDB", split_map)
 
     neg_images = glob(f"{RAW_ROOT}/kvasir_negative/*")
     
@@ -130,7 +130,7 @@ def main():
 
     # Train / Val
     positive_datasets = [
-        "CVC-ClinicDB",
+        "BKAI",
         "CVC-ColonDB",
         "Kvasir-SEG",
         "polypgen_positive",
