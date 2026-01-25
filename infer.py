@@ -14,7 +14,7 @@ import math
 MODEL_PATH = "runs/detect/new_yolo26s/polyp_yolo/yolo_det/weights/last.pt"
 
 IMG_SIZE = 640,
-CONF_THRES = 0.8
+CONF_THRES = 0.845
 IOU_THRES = 0.7
 DEVICE = 0
 
