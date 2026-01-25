@@ -49,7 +49,7 @@ for i in range(start, end+1):
     cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
     
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-    for _ in tqdm(range(total_frames), ncols = 30, desc = f"Video {i}"):
+    for _ in tqdm(range(total_frames), ncols = 100, desc = f"Video {i}"):
         ret, frame = cap.read()
         if not ret:
             break
