@@ -21,7 +21,7 @@ def main():
         kobj = 3.0,
 
         optimizer = "Adam",
-        lr0 = 0.001,
+        lr0 = 0.0008,
         lrf = 0.01,
         weight_decay = 0.0005,
         warmup_epochs = 3,
