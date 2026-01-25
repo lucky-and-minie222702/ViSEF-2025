@@ -6,7 +6,8 @@ version = sys.argv[1]
 variant = sys.argv[2]
 
 def main(): 
-    model = YOLO(f"yolo{version}{variant}.pt")  
+    # model = YOLO(f"yolo{version}{variant}.pt") 
+    model = YOLO("runs/detect/new_yolo26s/polyp_yolo/yolo_det/weights/last.pt")
 
     # Train
     model.train(
@@ -52,6 +53,7 @@ def main():
         seed = 27022009,
         
         save_conf = True,
+        resume = True,
     )
 
 if __name__ == "__main__":
