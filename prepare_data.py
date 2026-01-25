@@ -37,7 +37,7 @@ def mask_to_bboxes(mask_path):
     _, bin_mask = cv2.threshold(mask, 1, 255, cv2.THRESH_BINARY) 
     contours, _ = cv2.findContours( bin_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE ) 
     
-    total_area = w * w 
+    total_area = max(h, w) ** 2
     boxes = [] 
     
     for cnt in contours: 
