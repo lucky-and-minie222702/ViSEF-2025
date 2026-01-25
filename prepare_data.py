@@ -122,8 +122,8 @@ def main():
     process_positive_dataset("BKAI", split_map)
 
     neg_images = glob(f"{RAW_ROOT}/polypgen_negative/images/*")
-    neg_test = random.sample(neg_images, TEST_NEGATIVE_COUNT)
-    neg_remaining = list(set(neg_images) - set(neg_test))
+    neg_test = neg_images[:TEST_NEGATIVE_COUNT:]
+    neg_remaining = neg_images[TEST_NEGATIVE_COUNT::]
 
     process_negative_images(neg_test, "test")
 
@@ -162,9 +162,6 @@ def main():
 
             copy_sample(img_path, label_tmp, split_name)
             os.remove(label_tmp)
-
-    # negatives → train/val
-    random.shuffle(neg_remaining)
 
     process_negative_images(neg_remaining[:TRAIN_NEGATIVE_COUNT:], "train")
     process_negative_images(neg_remaining[TRAIN_NEGATIVE_COUNT:TRAIN_NEGATIVE_COUNT + VAL_NEGATIVE_COUNT:], "val")

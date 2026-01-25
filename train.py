@@ -11,28 +11,28 @@ def main():
     # Train
     model.train(
         data = "yolo_dataset/data.yaml",
-        epochs = 600,
+        epochs = 300,
         imgsz = 640,
         batch = 64,
         nbs = 64,           
         pretrained = True,
         
         device = 0,
-        box = 10.0,
-        dfl = 2.0,
+        kobj = 3.0,
 
         optimizer = "Adam",
-        lr0 = 0.0009,
+        lr0 = 0.001,
         lrf = 0.01,
         weight_decay = 0.0005,
         warmup_epochs = 3,
 
-        hsv_h = 0.02,
-        hsv_s = 0.75,
-        hsv_v = 0.45,
-        degrees = 1.8, 
+        hsv_h = 0.003,
+        hsv_s = 0.14,
+        hsv_v = 0.08,
+
+        degrees = 3.6, 
         translate = 0.01,   
-        scale = 0.2,
+        scale = 0.5,
         perspective = 0.0001,   
         flipud = 0.5, # vertical flip
         fliplr = 0.5, # horizontal flip
@@ -44,7 +44,7 @@ def main():
         val = True,
         save = True,
         save_period = 50,
-        project = f"yolo{version}{variant}/polyp_yolo",
+        project = f"new_yolo{version}{variant}/polyp_yolo",
         name = "yolo_det",
 
         patience = 1_000_000,
