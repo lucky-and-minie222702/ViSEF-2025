@@ -6,40 +6,39 @@ version = sys.argv[1]
 variant = sys.argv[2]
 
 def main(): 
-    # model = YOLO(f"yolo{version}{variant}.pt") 
-    model = YOLO("runs/detect/new_yolo26s/polyp_yolo/yolo_det/weights/last.pt")
+    model = YOLO(f"yolo{version}{variant}.pt") 
+    # model = YOLO("runs/detect/new_yolo26s/polyp_yolo/yolo_det/weights/last.pt")
 
     # Train
     model.train(
         data = "yolo_dataset/data.yaml",
-        epochs = 300,
+        epochs = 400,
         imgsz = 640,
         batch = 64,
         nbs = 64,           
         pretrained = True,
         
         device = 0,
-        kobj = 7.0,
 
         optimizer = "Adam",
-        lr0 = 0.001,
+        lr0 = 0.009,
         lrf = 0.01,
         weight_decay = 0.0005,
         warmup_epochs = 3,
 
-        hsv_h = 0.003,
-        hsv_s = 0.14,
-        hsv_v = 0.08,
+        hsv_h = 0.006,
+        hsv_s = 0.28,
+        hsv_v = 0.16,
 
         degrees = 3.6, 
         translate = 0.01,   
-        scale = 0.5,
+        scale = 0.3,
         perspective = 0.0001,   
         flipud = 0.5, # vertical flip
         fliplr = 0.5, # horizontal flip
-        copy_paste = 0.4,
+        copy_paste = 0.0,
         mosaic = 0.3,
-        close_mosaic = 100,
+        close_mosaic = 50,
 
         # Val
         val = True,
@@ -53,7 +52,7 @@ def main():
         seed = 27022009,
         
         save_conf = True,
-        resume = True,
+        # resume = True,
     )
 
 if __name__ == "__main__":

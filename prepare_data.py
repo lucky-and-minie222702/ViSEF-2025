@@ -10,9 +10,9 @@ from glob import glob
 RAW_ROOT = "dataset"
 OUT_ROOT = "yolo_dataset"
 
-TEST_NEGATIVE_COUNT = 1000
-TRAIN_NEGATIVE_COUNT = 1000
-VAL_NEGATIVE_COUNT = 600
+TEST_NEGATIVE_COUNT = 900
+TRAIN_NEGATIVE_COUNT = 500
+VAL_NEGATIVE_COUNT = 500
 
 TRAIN_RATIO = 0.9
 MIN_AREA_RATIO = 0.005
@@ -121,7 +121,8 @@ def main():
 
     process_positive_dataset("BKAI", split_map)
 
-    neg_images = glob(f"{RAW_ROOT}/polypgen_negative/images/*")
+    neg_images = glob(f"{RAW_ROOT}/kvasir_negative/*")
+    
     neg_test = neg_images[:TEST_NEGATIVE_COUNT:]
     neg_remaining = neg_images[TEST_NEGATIVE_COUNT::]
 
