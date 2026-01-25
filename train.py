@@ -18,7 +18,7 @@ def main():
         pretrained = True,
         
         device = 0,
-        kobj = 5.0,
+        kobj = 7.0,
 
         optimizer = "Adam",
         lr0 = 0.0008,
