@@ -79,18 +79,19 @@ def copy_sample(img_path, label_path, split):
 def main():
     ensure_dirs()
 
-    # Train / Val
     positive_datasets = [
+        "polypgen",
+        "Kvasir-SEG",
+        "PolypDB",
         "CVC-ColonDB",
         "CVC-ClinicDB"
-        "polypgen",
-        "PolypDB"
+        
     ]
 
     all_pos = []
     for d in positive_datasets:
         imgs = glob(f"{RAW_ROOT}/positive/{d}/images/*")
-        all_pos.extend([(d, p) for p in imgs])
+        all_pos.extend([(f"positive/{d}", p) for p in imgs])
 
     random.shuffle(all_pos)
     idx = 0
@@ -111,6 +112,8 @@ def main():
                 mask_path = f"{RAW_ROOT}/{dataset}/masks/{basename}.png"
         
             if not os.path.exists(mask_path):
+                print(mask_path)
+                exit()
                 continue
 
             boxes, qualified = mask_to_bboxes(mask_path)
