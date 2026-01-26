@@ -24,15 +24,14 @@ def main():
         optimizer = "MuSGD",
         lr0 = 0.01,
         warmup_epochs = 3,
-        cls = 0.75,
 
         hsv_h = 0.006,
         hsv_s = 0.28,
         hsv_v = 0.16,
 
         degrees = 9, 
-        translate = 0.01,   
-        scale = 0.6,
+        translate = 0.1,   
+        scale = 0.3,
         perspective = 0.0001,   
         flipud = 0.5, # vertical flip
         fliplr = 0.5, # horizontal flip
