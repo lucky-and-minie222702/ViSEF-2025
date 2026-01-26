@@ -10,9 +10,9 @@ from glob import glob
 RAW_ROOT = "dataset"
 OUT_ROOT = "yolo_dataset"
 
-TEST_NEGATIVE_COUNT = 500
-TRAIN_NEGATIVE_COUNT = 900
-VAL_NEGATIVE_COUNT = 500
+TEST_NEGATIVE_COUNT = 300
+TRAIN_NEGATIVE_COUNT = 1350
+VAL_NEGATIVE_COUNT = 300
 
 TRAIN_RATIO = 0.9
 MIN_AREA_RATIO = 0.005
@@ -125,6 +125,7 @@ def main():
     process_positive_dataset("CVC-ClinicDB", split_map)
 
     neg_images = glob(f"{RAW_ROOT}/kvasir_negative/*")
+    random.shuffle(neg_images)
     
     neg_test = neg_images[:TEST_NEGATIVE_COUNT:]
     neg_remaining = neg_images[TEST_NEGATIVE_COUNT::]
