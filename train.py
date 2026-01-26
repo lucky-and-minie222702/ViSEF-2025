@@ -12,7 +12,7 @@ def main():
     # Train
     model.train(
         data = "yolo_dataset/data.yaml",
-        epochs = 400,
+        epochs = 500,
         imgsz = 640,
         batch = 64,
         nbs = 64,           
@@ -24,14 +24,15 @@ def main():
         optimizer = "MuSGD",
         lr0 = 0.01,
         warmup_epochs = 3,
+        cls = 0.75,
 
         hsv_h = 0.006,
         hsv_s = 0.28,
         hsv_v = 0.16,
 
-        degrees = 3.6, 
+        degrees = 9, 
         translate = 0.01,   
-        scale = 0.3,
+        scale = 0.6,
         perspective = 0.0001,   
         flipud = 0.5, # vertical flip
         fliplr = 0.5, # horizontal flip
