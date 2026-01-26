@@ -89,7 +89,7 @@ def main():
 
     all_pos = []
     for d in positive_datasets:
-        imgs = glob(f"{RAW_ROOT}/{d}/images/*")
+        imgs = glob(f"{RAW_ROOT}/positive/{d}/images/*")
         all_pos.extend([(d, p) for p in imgs])
 
     random.shuffle(all_pos)
@@ -123,7 +123,7 @@ def main():
             copy_sample(img_path, label_tmp, split_name)
             os.remove(label_tmp)
 
-    neg_images = glob(f"{RAW_ROOT}/kvasir_negative/*")
+    neg_images = glob(f"{RAW_ROOT}/negative/*")
     random.shuffle(neg_images)
     idx = 0
     train_neg = neg_images[idx: idx + TRAIN_NEGATIVE_COUNT:]
