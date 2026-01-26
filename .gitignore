@@ -1,5 +1,4 @@
-dataset
-yolo_dataset
+*dataset*
 models
 *.txt
 *.ipynb

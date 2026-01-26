@@ -1,4 +1,5 @@
 import os
+from trace import Trace
 import cv2
 import yaml
 import shutil
@@ -10,11 +11,15 @@ from glob import glob
 RAW_ROOT = "dataset"
 OUT_ROOT = "yolo_dataset"
 
-TEST_NEGATIVE_COUNT = 300
-TRAIN_NEGATIVE_COUNT = 1350
+TEST_NEGATIVE_COUNT = 600
+TRAIN_NEGATIVE_COUNT = 2500
 VAL_NEGATIVE_COUNT = 300
 
-TRAIN_RATIO = 0.9
+TEST_POSITIVE_COUNT = 600
+VAL_POSITIVE_COUNT = 300
+TRAIN_POSITIVE_COUNT = 8500
+
+
 MIN_AREA_RATIO = 0.005
 MAX_AREA_RATIO = 0.35
 BOX_TIGHTEN_RATIO = 1 
@@ -71,73 +76,15 @@ def copy_sample(img_path, label_path, split):
     shutil.copy(label_path, f"{OUT_ROOT}/labels/{split}/{os.path.basename(label_path)}")
 
 
-def process_positive_dataset(dataset_name, split_map):
-    img_dir = f"{RAW_ROOT}/{dataset_name}/images"
-    mask_dir = f"{RAW_ROOT}/{dataset_name}/masks"
-
-    images = sorted(glob(f"{img_dir}/*"))
-
-    for img_path in tqdm(images, desc=dataset_name):
-        name = os.path.splitext(os.path.basename(img_path))
-        basename = name[0]
-        name = ''.join(name)
-        
-        mask_path = f"{mask_dir}/{basename}.jpg"
-        
-        if not os.path.exists(mask_path):
-            mask_path = f"{mask_dir}/{basename}.png"
-        
-        if not os.path.exists(mask_path):
-            continue
-        
-        boxes, qualified = mask_to_bboxes(mask_path)
-        if not qualified:
-            continue
-        
-        label_tmp = f"/tmp/{basename}.txt"
-        write_label(label_tmp, boxes)
-
-        split = split_map[dataset_name]
-        copy_sample(img_path, label_tmp, split)
-
-        os.remove(label_tmp)
-
-
-def process_negative_images(image_paths, split):
-    for img_path in tqdm(image_paths, desc=f"negative-{split}"):
-        name = os.path.splitext(os.path.basename(img_path))
-        basename = name[0]
-        name = ''.join(name)
-
-        label_tmp = f"/tmp/{basename}.txt"
-        open(label_tmp, "w").close()  # empty label
-
-        copy_sample(img_path, label_tmp, split)
-        os.remove(label_tmp)
-
-
 def main():
     ensure_dirs()
 
-    # Test set
-    split_map = {"CVC-ClinicDB": "test"}
-
-    process_positive_dataset("CVC-ClinicDB", split_map)
-
-    neg_images = glob(f"{RAW_ROOT}/kvasir_negative/*")
-    random.shuffle(neg_images)
-    
-    neg_test = neg_images[:TEST_NEGATIVE_COUNT:]
-    neg_remaining = neg_images[TEST_NEGATIVE_COUNT::]
-
-    process_negative_images(neg_test, "test")
-
     # Train / Val
     positive_datasets = [
-        "BKAI",
         "CVC-ColonDB",
-        "Kvasir-SEG",
-        "polypgen_positive",
+        "CVC-ClinicDB"
+        "polypgen",
+        "PolypDB"
     ]
 
     all_pos = []
@@ -146,13 +93,15 @@ def main():
         all_pos.extend([(d, p) for p in imgs])
 
     random.shuffle(all_pos)
-    split_idx = int(len(all_pos) * TRAIN_RATIO)
+    idx = 0
+    train_pos = all_pos[idx: idx + TRAIN_POSITIVE_COUNT:]
+    idx += TRAIN_POSITIVE_COUNT
+    val_pos = all_pos[idx:idx + VAL_POSITIVE_COUNT:]
+    idx += VAL_POSITIVE_COUNT
+    test_pos = all_pos[idx:idx + TEST_POSITIVE_COUNT:]
 
-    train_pos = all_pos[:split_idx]
-    val_pos = all_pos[split_idx:]
-
-    for split_name, subset in [("train", train_pos), ("val", val_pos)]:
-        for dataset, img_path in tqdm(subset, desc=split_name):
+    for split_name, subset in [("train", train_pos), ("val", val_pos), ("test", test_pos)]:
+        for dataset, img_path in tqdm(subset, desc = f"{split_name}-positive"):
             name = os.path.splitext(os.path.basename(img_path))
             basename = name[0]
             name = ''.join(name)
@@ -174,8 +123,27 @@ def main():
             copy_sample(img_path, label_tmp, split_name)
             os.remove(label_tmp)
 
-    process_negative_images(neg_remaining[:TRAIN_NEGATIVE_COUNT:], "train")
-    process_negative_images(neg_remaining[TRAIN_NEGATIVE_COUNT:TRAIN_NEGATIVE_COUNT + VAL_NEGATIVE_COUNT:], "val")
+    neg_images = glob(f"{RAW_ROOT}/kvasir_negative/*")
+    random.shuffle(neg_images)
+    idx = 0
+    train_neg = neg_images[idx: idx + TRAIN_NEGATIVE_COUNT:]
+    idx += TRAIN_NEGATIVE_COUNT
+    val_neg = neg_images[idx:idx + VAL_NEGATIVE_COUNT:]
+    idx += VAL_NEGATIVE_COUNT
+    test_neg = neg_images[idx:idx + TEST_NEGATIVE_COUNT:]
+
+    for split_name, subset in [("train", train_neg), ("val", val_neg), ("test", test_neg)]:
+        for img_path in tqdm(subset, desc=f"{split_name}-negative"):
+            name = os.path.splitext(os.path.basename(img_path))
+            basename = name[0]
+            name = ''.join(name)
+
+            label_tmp = f"/tmp/{basename}.txt"
+            open(label_tmp, "w").close()  # empty label
+
+            copy_sample(img_path, label_tmp, split_name)
+            os.remove(label_tmp)
+
 
     # data.yaml file
     data_yaml = {
