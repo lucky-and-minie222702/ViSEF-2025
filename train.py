@@ -7,7 +7,6 @@ variant = sys.argv[2]
 
 def main(): 
     model = YOLO(f"yolo{version}{variant}.pt") 
-    # model = YOLO("runs/detect/new_yolo26s/polyp_yolo/yolo_det/weights/last.pt")
 
     # Train
     model.train(
