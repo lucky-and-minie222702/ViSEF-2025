@@ -1,5 +1,4 @@
 import os
-from trace import Trace
 import cv2
 import yaml
 import shutil
@@ -7,6 +6,8 @@ import random
 import numpy as np
 from tqdm import tqdm
 from glob import glob
+import pandas as pd
+from pathlib import Path
 
 RAW_ROOT = "dataset"
 OUT_ROOT = "yolo_dataset"
@@ -15,9 +16,9 @@ TEST_NEGATIVE_COUNT = 600
 TRAIN_NEGATIVE_COUNT = 2500
 VAL_NEGATIVE_COUNT = 300
 
-TEST_POSITIVE_COUNT = 600
-VAL_POSITIVE_COUNT = 300
-TRAIN_POSITIVE_COUNT = 8500
+TEST_POSITIVE_COUNT = 700
+VAL_POSITIVE_COUNT = 400
+TRAIN_POSITIVE_COUNT = 8200
 
 
 MIN_AREA_RATIO = 0.005
@@ -78,6 +79,8 @@ def copy_sample(img_path, label_path, split):
 
 def main():
     ensure_dirs()
+    
+    # POSITIVE
 
     positive_datasets = [
         "polypgen",
@@ -92,7 +95,10 @@ def main():
     for d in positive_datasets:
         imgs = glob(f"{RAW_ROOT}/positive/{d}/images/*")
         all_pos.extend([(f"positive/{d}", p) for p in imgs])
-
+        
+    print(len(all_pos))
+    exit()  
+        
     random.shuffle(all_pos)
     idx = 0
     train_pos = all_pos[idx: idx + TRAIN_POSITIVE_COUNT:]
@@ -126,8 +132,26 @@ def main():
             copy_sample(img_path, label_tmp, split_name)
             os.remove(label_tmp)
 
+
+    # NEGATIVE
+
     neg_images = glob(f"{RAW_ROOT}/negative/*")
-    random.shuffle(neg_images)
+    
+    # hard negative
+    df = pd.read_csv("dataset/negative_labels.csv")        
+    train_include_id = df[df["Finding"] == "bbps-0-1"]["Video file"].to_list()
+    train_include_id = set(train_include_id)
+    train_include_neg = []
+    other_neg = []
+    for p in neg_images :
+        if Path(p).stem in train_include_id:
+            train_include_neg.append(p)
+        else:
+            other_neg.append(p)
+    
+    random.shuffle(other_neg)
+    neg_images = train_include_neg + other_neg
+    
     idx = 0
     train_neg = neg_images[idx: idx + TRAIN_NEGATIVE_COUNT:]
     idx += TRAIN_NEGATIVE_COUNT
