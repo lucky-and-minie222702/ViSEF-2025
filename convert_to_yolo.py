@@ -8,6 +8,8 @@ from tqdm import tqdm
 from glob import glob
 import pandas as pd
 from pathlib import Path
+import matplotlib.pyplot as plt
+
 
 RAW_ROOT = "dataset"
 OUT_ROOT = "yolo_dataset"
@@ -22,13 +24,14 @@ TRAIN_POSITIVE_COUNT = 8200
 
 
 MIN_AREA_RATIO = 0.005
-MAX_AREA_RATIO = 0.35
+MAX_AREA_RATIO = 0.5    
 BOX_TIGHTEN_RATIO = 1 
 
 CLASS_ID = 0 
 
-random.seed(22022009)
+random.seed(27022009)
 
+box_area = []
 
 def ensure_dirs():
     for split in ["train", "val", "test"]:
@@ -41,7 +44,7 @@ def mask_to_bboxes(mask_path):
     h, w = mask.shape 
     
     _, bin_mask = cv2.threshold(mask, 1, 255, cv2.THRESH_BINARY) 
-    contours, _ = cv2.findContours( bin_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE ) 
+    contours, _ = cv2.findContours( bin_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE) 
     
     total_area = max(h, w) ** 2
     boxes = [] 
@@ -50,6 +53,8 @@ def mask_to_bboxes(mask_path):
         x, y, bw, bh = cv2.boundingRect(cnt) 
         
         area = bw * bh
+        if not area < total_area * MIN_AREA_RATIO:
+            box_area.append(area / total_area)
         if area < total_area * MIN_AREA_RATIO or area > total_area * MAX_AREA_RATIO:
             continue
 
@@ -75,6 +80,18 @@ def write_label(label_path, boxes):
 def copy_sample(img_path, label_path, split):
     shutil.copy(img_path, f"{OUT_ROOT}/images/{split}/{os.path.basename(img_path)}")
     shutil.copy(label_path, f"{OUT_ROOT}/labels/{split}/{os.path.basename(label_path)}")
+    
+pos_count = {
+    "train": TRAIN_POSITIVE_COUNT,
+    "val": VAL_POSITIVE_COUNT,
+    "test": TEST_POSITIVE_COUNT,
+}
+
+neg_count = {
+    "train": TRAIN_NEGATIVE_COUNT,
+    "val": VAL_NEGATIVE_COUNT,
+    "test": TEST_NEGATIVE_COUNT
+}
 
 
 def main():
@@ -95,9 +112,6 @@ def main():
     for d in positive_datasets:
         imgs = glob(f"{RAW_ROOT}/positive/{d}/images/*")
         all_pos.extend([(f"positive/{d}", p) for p in imgs])
-        
-    print(len(all_pos))
-    exit()  
         
     random.shuffle(all_pos)
     idx = 0
@@ -124,6 +138,7 @@ def main():
 
             boxes, qualified = mask_to_bboxes(mask_path)
             if not qualified:
+                pos_count[split_name] -= 1
                 continue
 
             label_tmp = f"/tmp/{basename}.txt"
@@ -184,6 +199,15 @@ def main():
     with open(f"{OUT_ROOT}/data.yaml", "w") as f:
         yaml.dump(data_yaml, f)
 
+    print(f"Postive images: {pos_count}")
+    print(f"Negative images: {neg_count}")
+    
+    plt.hist(box_area, bins = 30)
+    plt.title("Box area distribution")
+    plt.xlabel("Area (normalized)")
+    plt.ylabel("Count")
+    plt.savefig("box_area.png", dpi = 200)
+    
     print("Complete.")
 
 
