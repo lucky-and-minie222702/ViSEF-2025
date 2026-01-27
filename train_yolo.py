@@ -11,7 +11,7 @@ def main():
     # Train
     model.train(
         data = "yolo_dataset/data.yaml",
-        epochs = 500,
+        epochs = 300,
         imgsz = 640,
         batch = 64,
         nbs = 64,           
