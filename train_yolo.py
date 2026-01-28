@@ -30,7 +30,7 @@ def main():
 
         degrees = 9, 
         translate = 0.1,   
-        scale = 0.6,
+        scale = 0.4,
         perspective = 0.0001,   
         flipud = 0.5, # vertical flip
         fliplr = 0.5, # horizontal flip
