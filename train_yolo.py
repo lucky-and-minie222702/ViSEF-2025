@@ -18,7 +18,7 @@ def main():
         pretrained = True,
         
         device = 0,
-        freeze = 4,
+        freeze = 5,
 
         optimizer = "MuSGD",
         lr0 = 0.01,
