@@ -14,13 +14,13 @@ import matplotlib.pyplot as plt
 RAW_ROOT = "dataset"
 OUT_ROOT = "yolo_dataset"
 
-TEST_NEGATIVE_COUNT = 600
 TRAIN_NEGATIVE_COUNT = 2500
 VAL_NEGATIVE_COUNT = 300
+TEST_NEGATIVE_COUNT = 600
 
-TEST_POSITIVE_COUNT = 700
-VAL_POSITIVE_COUNT = 400
-TRAIN_POSITIVE_COUNT = 8200
+TRAIN_POSITIVE_COUNT = 1500
+VAL_POSITIVE_COUNT = 1000
+TEST_POSITIVE_COUNT = 1800
 
 
 MIN_AREA_RATIO = 0.005
@@ -150,7 +150,7 @@ def main():
 
     # NEGATIVE
 
-    neg_images = glob(f"{RAW_ROOT}/negative/*")
+    neg_images = glob(f"{RAW_ROOT}/negative/hyperkvasir/*")
     
     # hard negative
     df = pd.read_csv("dataset/negative_labels.csv")        
@@ -173,6 +173,10 @@ def main():
     val_neg = neg_images[idx:idx + VAL_NEGATIVE_COUNT:]
     idx += VAL_NEGATIVE_COUNT
     test_neg = neg_images[idx:idx + TEST_NEGATIVE_COUNT:]
+    
+    # add polypgen negative (after filter)
+    train_neg.extend(glob(f"{RAW_ROOT}/negative/polypgen/*"))
+    neg_count["train"] = len(train_neg)
 
     for split_name, subset in [("train", train_neg), ("val", val_neg), ("test", test_neg)]:
         for img_path in tqdm(subset, desc=f"{split_name}-negative"):

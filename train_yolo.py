@@ -12,8 +12,8 @@ def main():
     model.train(
         data = "yolo_dataset/data.yaml",
         epochs = 300,
-        imgsz = 960,
-        batch = 32,
+        imgsz = 640,
+        batch = 64,
         nbs = 64,           
         pretrained = True,
         
@@ -30,7 +30,7 @@ def main():
 
         degrees = 9, 
         translate = 0.1,   
-        scale = 0.3,
+        scale = 0.6,
         perspective = 0.0001,   
         flipud = 0.5, # vertical flip
         fliplr = 0.5, # horizontal flip
@@ -42,7 +42,7 @@ def main():
         val = True,
         save = True,
         save_period = 50,
-        project = f"new_yolo{version}{variant}/polyp_yolo",
+        project = f"yolo{version}{variant}/polyp_yolo",
         name = "yolo_det",
 
         patience = 1_000_000,
