@@ -11,15 +11,15 @@ def train():
     # Train
     model.train(
         data = "yolo_dataset/data.yaml",
-        epochs = 300,
+        epochs = 150,
         imgsz = 640,
         batch = 64,
         nbs = 64,           
         pretrained = True,
         
         device = 0,
-        workers = 8,
-        freeze = 8,
+        workers = 4,
+        freeze = 3,
 
         optimizer = "MuSGD",
         lr0 = 0.01,
