@@ -1,5 +1,6 @@
 from ultralytics import YOLO
 import sys
+import albumentations as A
 
 
 version = sys.argv[1]
@@ -18,7 +19,7 @@ def train():
         pretrained = True,
         
         device = 0,
-        freeze = 3,
+        freeze = 0,
 
         optimizer = "MuSGD",
         lr0 = 0.01,
@@ -28,15 +29,27 @@ def train():
         hsv_s = 0.28,
         hsv_v = 0.16,
 
-        degrees = 9, 
+        degrees = 3.6, 
         translate = 0.1,   
-        scale = 0.4,
+        scale = 0.3,
         perspective = 0.0001,   
-        flipud = 0.5, # vertical flip
+        flipud = 0.0, # vertical flip
         fliplr = 0.5, # horizontal flip
         copy_paste = 0.0,
         mosaic = 0.3,
         close_mosaic = 50,
+        
+        augmentations = [                
+            A.MotionBlur(
+                blur_limit = (3, 9),
+                p = 0.3,
+            ),
+
+            A.GaussianBlur(
+                blur_limit = (3, 5),
+                p = 0.2,
+            ),
+        ],
 
         # Val
         val = True,
