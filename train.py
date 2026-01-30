@@ -1,6 +1,6 @@
 from ultralytics import YOLO
 import sys
-import albumentations as A
+# import albumentations as A
 
 
 version = sys.argv[1]
@@ -39,17 +39,17 @@ def train():
         mosaic = 0.3,
         close_mosaic = 50,
         
-        augmentations = [                
-            A.MotionBlur(
-                blur_limit = (3, 9),
-                p = 0.3,
-            ),
+        # augmentations = [                
+        #     A.MotionBlur(
+        #         blur_limit = (3, 9),
+        #         p = 0.3,
+        #     ),
 
-            A.GaussianBlur(
-                blur_limit = (3, 5),
-                p = 0.2,
-            ),
-        ],
+        #     A.GaussianBlur(
+        #         blur_limit = (3, 5),
+        #         p = 0.2,
+        #     ),
+        # ],
 
         # Val
         val = True,
