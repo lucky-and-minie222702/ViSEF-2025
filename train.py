@@ -18,7 +18,6 @@ def train():
         pretrained = True,
         
         device = 0,
-        workers = 4,
         freeze = 3,
 
         optimizer = "MuSGD",
