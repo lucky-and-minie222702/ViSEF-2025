@@ -156,9 +156,14 @@ def to_yolo():
 
 
     # NEGATIVE
+    negative_datasets = [
+        "polypgen",
+        "Gastrovision",
+        "hyperkvasir",
+    ]
 
     all_neg = []
-    for d in positive_datasets:
+    for d in negative_datasets:
         imgs = glob(f"{RAW_ROOT}/negative/{d}/*")
         all_neg.extend([(f"negative/{d}", p) for p in imgs])
     
@@ -175,7 +180,7 @@ def to_yolo():
             other_neg.append((d, p))
     
     random.shuffle(other_neg)
-    assert len(other_neg) > 600
+    assert len(train_include_neg) > 600
     all_neg = train_include_neg + other_neg
     
     idx = 0
