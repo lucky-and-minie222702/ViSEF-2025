@@ -9,32 +9,34 @@ from glob import glob
 import pandas as pd
 from pathlib import Path
 import matplotlib.pyplot as plt
+import joblib
 
 
 RAW_ROOT = "dataset"
 OUT_ROOT = "yolo_dataset"
+TEST_ROOT = "test_dataset"
 
-TRAIN_NEGATIVE_COUNT = 2500
-VAL_NEGATIVE_COUNT = 300
+TRAIN_NEGATIVE_COUNT = 700
+VAL_NEGATIVE_COUNT = 300    
 TEST_NEGATIVE_COUNT = 600
 
-TRAIN_POSITIVE_COUNT = 1500
-VAL_POSITIVE_COUNT = 1000
-TEST_POSITIVE_COUNT = 1800
+TRAIN_POSITIVE_COUNT = 8200
+VAL_POSITIVE_COUNT = 400
+TEST_POSITIVE_COUNT = 700
 
 
 MIN_AREA_RATIO = 0.005
-MAX_AREA_RATIO = 0.5    
+MAX_AREA_RATIO = 0.35    
 BOX_TIGHTEN_RATIO = 1 
 
 CLASS_ID = 0 
 
 random.seed(27022009)
-
+    
 box_area = []
 
 def ensure_dirs():
-    for split in ["train", "val", "test"]:
+    for split in ["train", "val", "test", "remain"]:
         os.makedirs(f"{OUT_ROOT}/images/{split}", exist_ok=True)
         os.makedirs(f"{OUT_ROOT}/labels/{split}", exist_ok=True)
 
@@ -85,16 +87,18 @@ pos_count = {
     "train": TRAIN_POSITIVE_COUNT,
     "val": VAL_POSITIVE_COUNT,
     "test": TEST_POSITIVE_COUNT,
+    "remain": -1,
 }
 
 neg_count = {
     "train": TRAIN_NEGATIVE_COUNT,
     "val": VAL_NEGATIVE_COUNT,
-    "test": TEST_NEGATIVE_COUNT
+    "test": TEST_NEGATIVE_COUNT,
+    "remain": -1,
 }
 
 
-def main():
+def to_yolo():
     ensure_dirs()
     
     # POSITIVE
@@ -120,8 +124,11 @@ def main():
     val_pos = all_pos[idx:idx + VAL_POSITIVE_COUNT:]
     idx += VAL_POSITIVE_COUNT
     test_pos = all_pos[idx:idx + TEST_POSITIVE_COUNT:]
+    idx += TEST_POSITIVE_COUNT
+    remain_pos = all_pos[idx::]
+    pos_count["remain"] = len(remain_pos)
 
-    for split_name, subset in [("train", train_pos), ("val", val_pos), ("test", test_pos)]:
+    for split_name, subset in [("train", train_pos), ("val", val_pos), ("test", test_pos), ("remain", remain_pos)]:
         for dataset, img_path in tqdm(subset, desc = f"{split_name}-positive"):
             name = os.path.splitext(os.path.basename(img_path))
             basename = name[0]
@@ -150,7 +157,10 @@ def main():
 
     # NEGATIVE
 
-    neg_images = glob(f"{RAW_ROOT}/negative/hyperkvasir/*")
+    all_neg = []
+    for d in positive_datasets:
+        imgs = glob(f"{RAW_ROOT}/negative/{d}/*")
+        all_neg.extend([(f"negative/{d}", p) for p in imgs])
     
     # hard negative
     df = pd.read_csv("dataset/negative_labels.csv")        
@@ -158,28 +168,28 @@ def main():
     train_include_id = set(train_include_id)
     train_include_neg = []
     other_neg = []
-    for p in neg_images :
+    for d, p in all_neg :
         if Path(p).stem in train_include_id:
-            train_include_neg.append(p)
+            train_include_neg.append((d, p))
         else:
-            other_neg.append(p)
+            other_neg.append((d, p))
     
     random.shuffle(other_neg)
-    neg_images = train_include_neg + other_neg
+    assert len(other_neg) > 600
+    all_neg = train_include_neg + other_neg
     
     idx = 0
-    train_neg = neg_images[idx: idx + TRAIN_NEGATIVE_COUNT:]
+    train_neg = all_neg[idx: idx + TRAIN_NEGATIVE_COUNT:]
     idx += TRAIN_NEGATIVE_COUNT
-    val_neg = neg_images[idx:idx + VAL_NEGATIVE_COUNT:]
+    val_neg = all_neg[idx:idx + VAL_NEGATIVE_COUNT:]
     idx += VAL_NEGATIVE_COUNT
-    test_neg = neg_images[idx:idx + TEST_NEGATIVE_COUNT:]
-    
-    # add polypgen negative (after filter)
-    train_neg.extend(glob(f"{RAW_ROOT}/negative/polypgen/*"))
-    neg_count["train"] = len(train_neg)
+    test_neg = all_neg[idx:idx + TEST_NEGATIVE_COUNT:]
+    idx += TEST_NEGATIVE_COUNT
+    remain_neg = all_neg[idx::]
+    neg_count["remain"] = len(remain_neg)
 
-    for split_name, subset in [("train", train_neg), ("val", val_neg), ("test", test_neg)]:
-        for img_path in tqdm(subset, desc=f"{split_name}-negative"):
+    for split_name, subset in [("train", train_neg), ("val", val_neg), ("test", test_neg), ("remain", remain_neg)]:
+        for _, img_path in tqdm(subset, desc=f"{split_name}-negative"):
             name = os.path.splitext(os.path.basename(img_path))
             basename = name[0]
             name = ''.join(name)
@@ -202,6 +212,24 @@ def main():
 
     with open(f"{OUT_ROOT}/data.yaml", "w") as f:
         yaml.dump(data_yaml, f)
+        
+    joblib.dump(
+        {
+            "positive": {
+                "train": train_pos,
+                "val": val_pos,
+                "test": test_pos,
+                "remain": remain_pos,
+            },
+            "negative": {
+                "train": train_neg,
+                "val": val_neg,
+                "test": test_neg,
+                "remain": remain_neg,
+            },
+        },
+        "dataset_split.joblib"
+    )
 
     print(f"Postive images: {pos_count}")
     print(f"Negative images: {neg_count}")
@@ -213,7 +241,7 @@ def main():
     plt.savefig("box_area.png", dpi = 200)
     
     print("Complete.")
-
-
+    
+    
 if __name__ == "__main__":
-    main()
+    to_yolo()  

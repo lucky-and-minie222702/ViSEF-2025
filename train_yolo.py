@@ -5,7 +5,7 @@ import sys
 version = sys.argv[1]
 variant = sys.argv[2]
 
-def main(): 
+def train(): 
     model = YOLO(f"yolo{version}{variant}.pt") 
 
     # Train
@@ -18,7 +18,8 @@ def main():
         pretrained = True,
         
         device = 0,
-        freeze = 5,
+        workers = 8,
+        freeze = 8,
 
         optimizer = "MuSGD",
         lr0 = 0.01,
@@ -54,4 +55,4 @@ def main():
     )
 
 if __name__ == "__main__":
-    main()
+    train()
