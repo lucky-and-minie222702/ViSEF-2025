@@ -11,7 +11,7 @@ import torch
 import os
 import math
 
-MODEL_PATH = "runs/detect/yolo26m/polyp_yolo/yolo_det/weights/last.pt"
+MODEL_PATH = "runs/detect/yolo26m/polyp_yolo/yolo_det/weights/last.engine"
 
 IMG_SIZE = 640,
 CONF_THRES = 0.7
