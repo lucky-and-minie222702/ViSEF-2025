@@ -18,8 +18,8 @@ def generate_stage2_data(model_path, dataset_root, output_root):
 
     for task in tasks:
         img_dir = Path(dataset_root) / 'images' / task['src']
-        
         img_files = list(img_dir.glob('*.*'))
+        
         results = model.predict(source=str(img_dir), conf=0.5, save=False, stream=True)
 
         for r in tqdm(results, desc = f"Processing {task['src']}", total = len(img_files), ncols = 100):
