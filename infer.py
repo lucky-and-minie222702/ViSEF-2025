@@ -66,7 +66,7 @@ for video_id in range(start, end+1):
             break
             
         
-        if fr == 14300:
+        if fr == 600:
             break
 
     
@@ -128,7 +128,8 @@ for video_id in range(start, end+1):
                             cv2.rectangle(annotated, (x1, y1), (x2, y2), (0, 255, 0), 3)
 
                             current_boxes.append((x1, y1, x2, y2, det_conf, cls_conf))
-
+                        
+                        print("a", len(annotated_frame))
                         if max(annotated_frame, key=lambda x: x[0]) != fr - 1 or len(annotated_frame) == 0:
                             annotated_frame.append((fr, det_conf, cls_conf))
                         # save last valid detection
