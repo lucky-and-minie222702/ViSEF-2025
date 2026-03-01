@@ -19,7 +19,7 @@ def blurry(image):
     score = cv2.Laplacian(gray, cv2.CV_64F).var()
     return score
 
-CONF_THRES = 0.9
+CONF_THRES = 0.5
 det_model = YOLO("det_best.pt")
 cls_model  = YOLO("cls_best.pt")
 
@@ -60,6 +60,9 @@ for video_id in range(start, end+1):
         ret, frame = cap.read()
         if not ret:
             break
+        
+        if fr == 6000:
+            break
 
     
         det_result = det_model.predict(
@@ -80,7 +83,7 @@ for video_id in range(start, end+1):
         det_conf = -1
         cls_conf = -1
         
-        annotated = frame
+        annotated = frame.copy()
 
         if len(pred_boxes) > 0:
             valid_boxes = []
@@ -105,7 +108,7 @@ for video_id in range(start, end+1):
                         cls_conf = cls_result.probs.top1conf.item()
                         cls_label = cls_result.probs.top1
 
-                        if cls_label == 1 and cls_conf > 0.95:
+                        if cls_label == 1 and cls_conf > 0.5:
                             valid_boxes.append(i)
                             valid_cls_confs.append(cls_conf)
 
