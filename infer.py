@@ -126,7 +126,7 @@ for video_id in range(start, end+1):
 
                             current_boxes.append((x1, y1, x2, y2, det_conf, cls_conf))
 
-                        if max(annotated_frame, key=lambda x: x[0]) != fr - 1:
+                        if max(annotated_frame, key=lambda x: x[0]) != fr - 1 or len(annotated_frame) == 0:
                             annotated_frame.append((fr, det_conf, cls_conf))
                         # save last valid detection
                         last_valid_boxes = current_boxes
@@ -144,7 +144,7 @@ for video_id in range(start, end+1):
                     cv2.rectangle(annotated, (x1, y1), (x2, y2), (0, 255, 0), 3)
                         
         out.write(annotated)
-        pbar.set_postfix(polyp_fr = len(polyp_frame))
+        pbar.set_postfix(polyp_event = len(annotated_frame))
             
     annotated_frame_map[video_id] = annotated_frame
     cap.release()
