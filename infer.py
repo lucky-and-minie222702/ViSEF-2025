@@ -63,11 +63,16 @@ for video_id in range(start, end+1):
     # cap.set(cv2.CAP_PROP_POS_FRAMES, 21600)
     pbar = tqdm(range(total_frames), ncols = 100, desc = f"Video {video_id}")
     for _ in pbar:
-        ret, frame = cap.read()
+        ret, frame = cap.read() 
         old_frame = frame.copy()
         fr += 1
+        
         if not ret:
             break
+        
+        if fr >= total_frames - 60 * 90:  
+            out.write(frame)
+            continue
     
         det_result = det_model.predict(
             source=frame,
@@ -155,10 +160,8 @@ for video_id in range(start, end+1):
                 for (x1, y1, x2, y2, det_conf, cls_conf) in last_valid_boxes:
                     cv2.rectangle(annotated, (x1, y1), (x2, y2), (0, 255, 0), 3)
                       
-        if fr >= total_frames - 60 * 30:  
-            out.write(old_frame)
-        else:
-            out.write(annotated)
+
+        out.write(annotated)
         pbar.set_postfix(polyp_event = len(annotated_event))
             
     annotated_event_map[video_id] = {
