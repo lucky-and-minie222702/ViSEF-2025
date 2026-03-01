@@ -122,7 +122,7 @@ for video_id in range(start, end+1):
                         last_valid_boxes = current_boxes
                         last_valid_frame = fr
 
-                        polyp_frame.append((fr, det_conf, cls_conf))
+            polyp_frame.append((fr, det_conf, cls_conf))
 
         # persistence logic
         elif last_valid_boxes is not None:
@@ -136,7 +136,7 @@ for video_id in range(start, end+1):
         out.write(annotated)
         pbar.set_postfix(polyp_fr = len(polyp_frame))
             
-    polyp_frame_map[i] = polyp_frame
+    polyp_frame_map[video_id] = polyp_frame
     cap.release()
     out.release()
 
