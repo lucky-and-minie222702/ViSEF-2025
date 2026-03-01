@@ -52,14 +52,14 @@ for video_id in range(start, end+1):
     #     r[0].plot()
 
     fr = 0    
+    polyp_frame = []
+    annotated_frame = []
+
 
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     cap.set(cv2.CAP_PROP_POS_FRAMES, 14000)
     pbar = tqdm(range(total_frames), ncols = 100, desc = f"Video {video_id}")
     for _ in pbar:
-        polyp_frame = []
-        annotated_frame = []
-
         ret, frame = cap.read()
         fr += 1
         if not ret:
@@ -93,7 +93,6 @@ for video_id in range(start, end+1):
         if len(pred_boxes) > 0:
             valid_boxes = []
             valid_cls_confs = []
-            print("a")
 
             if len(polyp_frame) >= 1:
                 if polyp_frame[-1][0] == fr - 1:
