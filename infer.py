@@ -58,6 +58,7 @@ for video_id in range(start, end+1):
     pbar = tqdm(range(total_frames), ncols = 100, desc = f"Video {video_id}")
     for _ in pbar:
         ret, frame = cap.read()
+        fr += 1
         if not ret:
             break
         
