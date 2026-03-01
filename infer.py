@@ -93,6 +93,7 @@ for video_id in range(start, end+1):
         if len(pred_boxes) > 0:
             valid_boxes = []
             valid_cls_confs = []
+            print("a")
 
             if len(polyp_frame) >= 1:
                 if polyp_frame[-1][0] == fr - 1:
