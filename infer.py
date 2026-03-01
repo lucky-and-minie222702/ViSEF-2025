@@ -19,7 +19,7 @@ def blurry(image):
     score = cv2.Laplacian(gray, cv2.CV_64F).var()
     return score
 
-CONF_THRES = 0.01
+CONF_THRES = 0.8
 det_model = YOLO("det_best.pt")
 cls_model  = YOLO("cls_best.pt")
 
@@ -57,18 +57,13 @@ for video_id in range(start, end+1):
 
 
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-    cap.set(cv2.CAP_PROP_POS_FRAMES, 14000)
+    # cap.set(cv2.CAP_PROP_POS_FRAMES, 14000)
     pbar = tqdm(range(total_frames), ncols = 100, desc = f"Video {video_id}")
     for _ in pbar:
         ret, frame = cap.read()
         fr += 1
         if not ret:
             break
-            
-        
-        if fr == 600:
-            break
-
     
         det_result = det_model.predict(
             source=frame,
@@ -113,7 +108,7 @@ for video_id in range(start, end+1):
                         cls_conf = cls_result.probs.top1conf.item()
                         cls_label = cls_result.probs.top1
 
-                        if cls_label == 1 and cls_conf > 0.5:
+                        if cls_label == 1 and cls_conf > 0.9:
                             valid_boxes.append(i)
                             valid_cls_confs.append(cls_conf)
 
@@ -123,7 +118,7 @@ for video_id in range(start, end+1):
 
                         for idx, cls_conf in zip(valid_boxes, valid_cls_confs):
                             x1, y1, x2, y2 = map(int, pred_boxes[idx])
-                            det_conf = pred_confs[idx]
+                            det_conf = float(pred_confs[idx])
 
                             cv2.rectangle(annotated, (x1, y1), (x2, y2), (0, 255, 0), 3)
 
@@ -132,7 +127,7 @@ for video_id in range(start, end+1):
                         if len(annotated_frame) == 0:
                             annotated_frame.append((fr, det_conf, cls_conf))
                         else:
-                            if max(annotated_frame, key=lambda x: x[0])[0] < fr - 2:
+                            if max(annotated_frame, key=lambda x: x[0])[0] < fr - 60:
                                 annotated_frame.append((fr, det_conf, cls_conf))
 
 
@@ -158,6 +153,4 @@ for video_id in range(start, end+1):
     out.release()
 
 torch.cuda.empty_cache()
-print(annotated_frame_map, annotated_frame)
-print(polyp_frame)
 joblib.dump(annotated_frame_map, "annotated_frame_map.joblib")
