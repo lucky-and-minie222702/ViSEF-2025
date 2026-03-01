@@ -19,7 +19,7 @@ def blurry(image):
     score = cv2.Laplacian(gray, cv2.CV_64F).var()
     return score
 
-CONF_THRES = 0.5
+CONF_THRES = 0.25
 det_model = YOLO("det_best.pt")
 cls_model  = YOLO("cls_best.pt")
 
@@ -62,7 +62,7 @@ for video_id in range(start, end+1):
         if not ret:
             break
         
-        if fr == 6000:
+        if fr == 600:
             break
 
     
