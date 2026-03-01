@@ -77,6 +77,9 @@ for video_id in range(start, end+1):
         last_valid_frame = -1
         persist_frames = 5
         
+        det_conf = -1
+        cls_conf = -1
+        
         annotated = frame
 
         if len(pred_boxes) > 0:
