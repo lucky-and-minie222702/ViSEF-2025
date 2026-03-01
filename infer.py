@@ -45,11 +45,11 @@ for video_id in range(start, end+1):
     out = cv2.VideoWriter(OUTPUT_VIDEO, fourcc, fps, (width, height))
     
     # Warm-up
-    for _ in range(20):
-        r = det_model(np.zeros((640, 640, 3)), verbose=False)
-        r[0].plot()
-        r = cls_model(np.zeros((224, 224, 3)), verbose=False)
-        r[0].plot()
+    # for _ in range(20):
+    #     r = det_model(np.zeros((640, 640, 3)), verbose=False)
+    #     r[0].plot()
+    #     r = cls_model(np.zeros((224, 224, 3)), verbose=False)
+    #     r[0].plot()
 
     polyp_frame = []
     fr = 0    
