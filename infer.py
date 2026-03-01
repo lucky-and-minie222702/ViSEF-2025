@@ -19,7 +19,7 @@ def blurry(image):
     score = cv2.Laplacian(gray, cv2.CV_64F).var()
     return score
 
-CONF_THRES = 0.25
+CONF_THRES = 0.01
 det_model = YOLO("det_best.pt")
 cls_model  = YOLO("cls_best.pt")
 
