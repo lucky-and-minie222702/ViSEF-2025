@@ -19,7 +19,7 @@ def blurry(image):
     score = cv2.Laplacian(gray, cv2.CV_64F).var()
     return score
 
-CONF_THRES = 0.9
+CONF_THRES = 0.25
 det_model = YOLO("det_best.pt")
 cls_model  = YOLO("cls_best.pt")
 
@@ -64,7 +64,7 @@ for video_id in range(start, end+1):
         if not ret:
             break
         
-        if fr == 300:
+        if fr == 600:
             break
 
     
@@ -111,7 +111,7 @@ for video_id in range(start, end+1):
                         cls_conf = cls_result.probs.top1conf.item()
                         cls_label = cls_result.probs.top1
 
-                        if cls_label == 1 and cls_conf > 0.95:
+                        if cls_label == 1 and cls_conf > 0.5:
                             valid_boxes.append(i)
                             valid_cls_confs.append(cls_conf)
 
@@ -153,4 +153,5 @@ for video_id in range(start, end+1):
 
 torch.cuda.empty_cache()
 print(annotated_frame_map, annotated_frame)
+print(polyp_frame)
 joblib.dump(annotated_frame_map, "annotated_frame_map.joblib")
