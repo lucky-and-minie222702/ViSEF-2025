@@ -19,7 +19,7 @@ def blurry(image):
     score = cv2.Laplacian(gray, cv2.CV_64F).var()
     return score
 
-CONF_THRES = 0.01
+CONF_THRES = 0.8
 det_model = YOLO("det_best.pt")
 cls_model  = YOLO("cls_best.pt")
 
@@ -91,7 +91,7 @@ for video_id in range(start, end+1):
             valid_cls_confs = []
 
             if len(polyp_frame) >= 1:
-                if polyp_frame[-1][0] == fr - 1:
+                if polyp_frame[-1][0] >= fr - 2:
                     for i, box in enumerate(pred_boxes):
                         x1, y1, x2, y2 = map(int, box)
 
@@ -109,7 +109,7 @@ for video_id in range(start, end+1):
                         cls_conf = cls_result.probs.top1conf.item()
                         cls_label = cls_result.probs.top1
 
-                        if cls_label == 1 and cls_conf > 0.5:
+                        if cls_label == 1 and cls_conf > 0.8:
                             valid_boxes.append(i)
                             valid_cls_confs.append(cls_conf)
 
@@ -123,16 +123,16 @@ for video_id in range(start, end+1):
 
                             cv2.rectangle(annotated, (x1, y1), (x2, y2), (0, 255, 0), 3)
                             
-                            label = f"Polyp det:{det_conf:.2f} cls:{cls_conf:.2f}"
-                            cv2.putText(
-                                annotated,
-                                label,
-                                (x1, y1 - 10),
-                                cv2.FONT_HERSHEY_SIMPLEX,
-                                0.5,
-                                (0, 255, 0),
-                                2
-                            )
+                            # label = f"Polyp det:{det_conf:.2f} cls:{cls_conf:.2f}"
+                            # cv2.putText(
+                            #     annotated,
+                            #     label,
+                            #     (x1, y1 - 10),
+                            #     cv2.FONT_HERSHEY_SIMPLEX,
+                            #     0.5,
+                            #     (0, 255, 0),
+                            #     2
+                            # )
 
                             current_boxes.append((x1, y1, x2, y2, det_conf, cls_conf))
                         
