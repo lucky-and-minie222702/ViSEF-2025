@@ -19,7 +19,7 @@ def blurry(image):
     score = cv2.Laplacian(gray, cv2.CV_64F).var()
     return score
 
-CONF_THRES = 0.25
+CONF_THRES = 0.9
 det_model = YOLO("det_best.pt")
 cls_model  = YOLO("cls_best.pt")
 
@@ -27,7 +27,7 @@ cls_model  = YOLO("cls_best.pt")
 start = int(sys.argv[1])
 end = int(sys.argv[2])
 
-polyp_frame_map = {}
+annotated_frame_map = {}
 
 for video_id in range(start, end+1):
     INPUT_VIDEO = f"videos/{video_id}.mp4"
@@ -52,6 +52,7 @@ for video_id in range(start, end+1):
     #     r[0].plot()
 
     polyp_frame = []
+    annotated_frame = []
     fr = 0    
 
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
@@ -62,7 +63,7 @@ for video_id in range(start, end+1):
         if not ret:
             break
         
-        if fr == 600:
+        if fr == 300:
             break
 
     
@@ -79,7 +80,7 @@ for video_id in range(start, end+1):
         valid_boxes = []
         last_valid_boxes = None
         last_valid_frame = -1
-        persist_frames = 5
+        persist_frames = 15
         
         det_conf = -1
         cls_conf = -1
@@ -109,7 +110,7 @@ for video_id in range(start, end+1):
                         cls_conf = cls_result.probs.top1conf.item()
                         cls_label = cls_result.probs.top1
 
-                        if cls_label == 1 and cls_conf > 0.5:
+                        if cls_label == 1 and cls_conf > 0.95:
                             valid_boxes.append(i)
                             valid_cls_confs.append(cls_conf)
 
@@ -125,6 +126,8 @@ for video_id in range(start, end+1):
 
                             current_boxes.append((x1, y1, x2, y2, det_conf, cls_conf))
 
+                        if max(annotated_frame, key=lambda x: x[0]) != fr - 1:
+                            annotated_frame.append((fr, det_conf, cls_conf))
                         # save last valid detection
                         last_valid_boxes = current_boxes
                         last_valid_frame = fr
@@ -143,10 +146,10 @@ for video_id in range(start, end+1):
         out.write(annotated)
         pbar.set_postfix(polyp_fr = len(polyp_frame))
             
-    polyp_frame_map[video_id] = polyp_frame
+    annotated_frame_map[video_id] = annotated_frame
     cap.release()
     out.release()
 
 torch.cuda.empty_cache()
     
-joblib.dump(polyp_frame_map, "polyp_frame_map.joblib")
+joblib.dump(annotated_frame_map, "annotated_frame_map.joblib")
