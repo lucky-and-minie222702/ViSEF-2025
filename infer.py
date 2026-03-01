@@ -27,7 +27,7 @@ cls_model  = YOLO("cls_best.pt")
 start = int(sys.argv[1])
 end = int(sys.argv[2])
 
-annotated_frame_map = {}
+annotated_event_map = {}
 
 for video_id in range(start, end+1):
     INPUT_VIDEO = f"videos/{video_id}.mp4"
@@ -53,7 +53,7 @@ for video_id in range(start, end+1):
 
     fr = 0    
     polyp_frame = []
-    annotated_frame = []
+    annotated_event = []
 
 
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
@@ -61,6 +61,7 @@ for video_id in range(start, end+1):
     pbar = tqdm(range(total_frames), ncols = 100, desc = f"Video {video_id}")
     for _ in pbar:
         ret, frame = cap.read()
+        old_frame = frame.copy()
         fr += 1
         if not ret:
             break
@@ -124,11 +125,11 @@ for video_id in range(start, end+1):
 
                             current_boxes.append((x1, y1, x2, y2, det_conf, cls_conf))
                         
-                        if len(annotated_frame) == 0:
-                            annotated_frame.append((fr, det_conf, cls_conf))
+                        if len(annotated_event) == 0:
+                            annotated_event.append(fr)
                         else:
-                            if max(annotated_frame, key=lambda x: x[0])[0] < fr - 60:
-                                annotated_frame.append((fr, det_conf, cls_conf))
+                            if max(annotated_event) < fr - 60:
+                                annotated_event.append(fr)
 
 
                         last_valid_boxes = current_boxes
@@ -144,13 +145,19 @@ for video_id in range(start, end+1):
 
                 for (x1, y1, x2, y2, det_conf, cls_conf) in last_valid_boxes:
                     cv2.rectangle(annotated, (x1, y1), (x2, y2), (0, 255, 0), 3)
-                        
-        out.write(annotated)
-        pbar.set_postfix(polyp_event = len(annotated_frame))
+                      
+        if fr >= total_frames - 60 * 20:  
+            out.write(old_frame)
+        else:
+            out.write(annotated)
+        pbar.set_postfix(polyp_event = len(annotated_event))
             
-    annotated_frame_map[video_id] = annotated_frame
+    annotated_event_map[video_id] = {
+        "event": annotated_event,
+        "raw": polyp_frame,
+    }
     cap.release()
     out.release()
 
 torch.cuda.empty_cache()
-joblib.dump(annotated_frame_map, "annotated_frame_map.joblib")
+joblib.dump(annotated_event_map, "annotated_event_map.joblib")
