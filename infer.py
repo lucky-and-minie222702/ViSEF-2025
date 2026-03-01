@@ -19,7 +19,7 @@ def blurry(image):
     score = cv2.Laplacian(gray, cv2.CV_64F).var()
     return score
 
-CONF_THRES = 0.5
+CONF_THRES = 0.8
 det_model = YOLO("det_best.pt")
 cls_model  = YOLO("cls_best.pt")
 
@@ -54,19 +54,19 @@ for video_id in range(start, end+1):
     fr = 0    
     polyp_frame = []
     annotated_event = []
+    last_valid_boxes = None
+    last_valid_frame = -1
+    persist_frames = 15
 
 
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-    cap.set(cv2.CAP_PROP_POS_FRAMES, 21600)
+    # cap.set(cv2.CAP_PROP_POS_FRAMES, 21600)
     pbar = tqdm(range(total_frames), ncols = 100, desc = f"Video {video_id}")
     for _ in pbar:
         ret, frame = cap.read()
         old_frame = frame.copy()
         fr += 1
         if not ret:
-            break
-        
-        if fr == 600:
             break
     
         det_result = det_model.predict(
@@ -80,9 +80,6 @@ for video_id in range(start, end+1):
         pred_confs = det_result.boxes.conf.cpu().numpy()
 
         valid_boxes = []
-        last_valid_boxes = None
-        last_valid_frame = -1
-        persist_frames = 15
         
         det_conf = -1
         cls_conf = -1
@@ -112,7 +109,7 @@ for video_id in range(start, end+1):
                         cls_conf = cls_result.probs.top1conf.item()
                         cls_label = cls_result.probs.top1
 
-                        if cls_label == 1 and cls_conf > 0.9:
+                        if cls_label == 1 and cls_conf > 0.8:
                             valid_boxes.append(i)
                             valid_cls_confs.append(cls_conf)
 
@@ -131,7 +128,7 @@ for video_id in range(start, end+1):
                         if len(annotated_event) == 0:
                             annotated_event.append(fr)
                         else:
-                            if max(annotated_event) < fr - 60:
+                            if max(annotated_event) < fr - 60 * 5:
                                 annotated_event.append(fr)
 
 
@@ -140,9 +137,7 @@ for video_id in range(start, end+1):
 
             polyp_frame.append((fr, det_conf, cls_conf))
 
-        # persistence logic
-        elif last_valid_boxes is not None:
-            # If within next 5 frames
+        if last_valid_boxes is not None:
             if fr - last_valid_frame <= persist_frames:
                 annotated = frame.copy()
 
