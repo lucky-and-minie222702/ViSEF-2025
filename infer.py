@@ -19,7 +19,7 @@ def blurry(image):
     score = cv2.Laplacian(gray, cv2.CV_64F).var()
     return score
 
-CONF_THRES = 0.8
+CONF_THRES = 0.5
 det_model = YOLO("det_best.pt")
 cls_model  = YOLO("cls_best.pt")
 
@@ -57,13 +57,16 @@ for video_id in range(start, end+1):
 
 
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-    # cap.set(cv2.CAP_PROP_POS_FRAMES, 14000)
+    cap.set(cv2.CAP_PROP_POS_FRAMES, 21600)
     pbar = tqdm(range(total_frames), ncols = 100, desc = f"Video {video_id}")
     for _ in pbar:
         ret, frame = cap.read()
         old_frame = frame.copy()
         fr += 1
         if not ret:
+            break
+        
+        if fr == 600:
             break
     
         det_result = det_model.predict(
