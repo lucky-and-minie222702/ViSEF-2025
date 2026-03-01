@@ -130,9 +130,13 @@ for video_id in range(start, end+1):
                             current_boxes.append((x1, y1, x2, y2, det_conf, cls_conf))
                         
                         print("a", len(annotated_frame))
-                        if max(annotated_frame, key=lambda x: x[0]) != fr - 1 or len(annotated_frame) == 0:
+                        if len(annotated_frame) == 0:
                             annotated_frame.append((fr, det_conf, cls_conf))
-                        # save last valid detection
+                        else:
+                            if max(annotated_frame, key=lambda x: x[0]) < fr - 2:
+                                annotated_frame.append((fr, det_conf, cls_conf))
+
+
                         last_valid_boxes = current_boxes
                         last_valid_frame = fr
 
