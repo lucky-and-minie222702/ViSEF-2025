@@ -1,80 +1,3 @@
-from ultralytics import YOLO
-import cv2
-import numpy as np
-from PIL import Image
-import time
-from tqdm import tqdm
-import matplotlib.pyplot as plt
-import sys
-import time
-import torch
-import os
-import math
-
-MODEL_PATH = "runs/detect/yolo26n/polyp_yolo/yolo_det/weights/last.engine"
-
-IMG_SIZE = 640,
-CONF_THRES = 0.7
-IOU_THRES = 0.7
-DEVICE = 0
-
-model = YOLO(MODEL_PATH)
-
-start = int(sys.argv[1])
-end = int(sys.argv[2])
-
-for i in range(start, end+1):
-    INPUT_VIDEO = f"videos/{i}.mp4"
-    OUTPUT_VIDEO = f"videos_pred/{i}.mp4"
-    
-    cap = cv2.VideoCapture(INPUT_VIDEO)
-    
-    fps = cap.get(cv2.CAP_PROP_FPS)
-    frame_time = 1.0 / fps
-    
-    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-    
-    fourcc = cv2.VideoWriter_fourcc(*"mp4v")
-    out = cv2.VideoWriter(OUTPUT_VIDEO, fourcc, fps, (width, height))
-    
-    # Warm-up
-    for _ in range(20):
-        ret, frame = cap.read()
-        if not ret:
-            break
-        r = model(frame, verbose=False)
-        _ = r[0].plot()
-    
-    cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
-    
-    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-    for _ in tqdm(range(total_frames), ncols = 100, desc = f"Video {i}"):
-        ret, frame = cap.read()
-        if not ret:
-            break
-
-        r = model.predict(
-            source = frame,
-            imgsz = IMG_SIZE,
-            conf = CONF_THRES,
-            iou = IOU_THRES,
-            max_det = 5,
-            workers = 2,
-            verbose = False,
-        )
-        annotated = r[0].plot(
-            labels = True,
-            conf = True,
-        )
-        out.write(annotated)
-    
-    cap.release()
-    out.release()
-
-torch.cuda.empty_cache()
-
-
 import os
 import glob
 import numpy as np
@@ -88,7 +11,8 @@ import cv2
 import av
 import torch
 from rfdetr import RFDETRNano
-from decord import VideoReader, cpu
+import sys
+import joblib
 
 def blurry(image):
     gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
@@ -149,6 +73,9 @@ for video_id in range(start, end+1):
         pred_confs = det_result.boxes.conf.cpu().numpy()
 
         valid_boxes = []
+        last_valid_boxes = None
+        last_valid_frame = -1
+        persist_frames = 5
         
         annotated = frame
 
@@ -156,53 +83,63 @@ for video_id in range(start, end+1):
             valid_boxes = []
             valid_cls_confs = []
 
-            for i, box in enumerate(pred_boxes):
-                x1, y1, x2, y2 = map(int, box)
+            if len(polyp_frame) >= 1:
+                if polyp_frame[-1][0] == fr - 1:
+                    for i, box in enumerate(pred_boxes):
+                        x1, y1, x2, y2 = map(int, box)
 
-                crop = frame[
-                    max(0, int(y1 * 0.9)) : min(height, int(y2 * 1.1)),
-                    max(0, int(x1 * 0.9)) : min(width, int(x2 * 1.1))
-                ]
+                        crop = frame[
+                            max(0, int(y1 * 0.9)) : min(height, int(y2 * 1.1)),
+                            max(0, int(x1 * 0.9)) : min(width, int(x2 * 1.1))
+                        ]
 
-                cls_result = cls_model.predict(
-                    source=crop,
-                    imgsz=96,
-                    verbose=False
-                )[0]
+                        cls_result = cls_model.predict(
+                            source=crop,
+                            imgsz=96,
+                            verbose=False
+                        )[0]
 
-                cls_conf = cls_result.probs.top1conf.item()
-                cls_label = cls_result.probs.top1
+                        cls_conf = cls_result.probs.top1conf.item()
+                        cls_label = cls_result.probs.top1
 
-                if cls_label == 1 and cls_conf > 0.95:
-                    valid_boxes.append(i)
-                    valid_cls_confs.append(cls_conf)
+                        if cls_label == 1 and cls_conf > 0.95:
+                            valid_boxes.append(i)
+                            valid_cls_confs.append(cls_conf)
 
-            if len(valid_boxes) > 0:
+                    if len(valid_boxes) > 0:
+                        annotated = frame.copy()
+                        current_boxes = []
+
+                        for idx, cls_conf in zip(valid_boxes, valid_cls_confs):
+                            x1, y1, x2, y2 = map(int, pred_boxes[idx])
+                            det_conf = pred_confs[idx]
+
+                            cv2.rectangle(annotated, (x1, y1), (x2, y2), (0, 255, 0), 3)
+
+                            current_boxes.append((x1, y1, x2, y2, det_conf, cls_conf))
+
+                        # save last valid detection
+                        last_valid_boxes = current_boxes
+                        last_valid_frame = fr
+
+                        polyp_frame.append((fr, det_conf, cls_conf))
+
+        # persistence logic
+        elif last_valid_boxes is not None:
+            # If within next 5 frames
+            if fr - last_valid_frame <= persist_frames:
                 annotated = frame.copy()
 
-                for idx, cls_conf in zip(valid_boxes, valid_cls_confs):
-                    x1, y1, x2, y2 = map(int, pred_boxes[idx])
-
-                    det_conf = pred_confs[idx]
-
-                    # Draw rectangle
+                for (x1, y1, x2, y2, det_conf, cls_conf) in last_valid_boxes:
                     cv2.rectangle(annotated, (x1, y1), (x2, y2), (0, 255, 0), 3)
-
-                    # Put label
-                    # label = f"Polyp"
-                    # cv2.putText(
-                    #     annotated,
-                    #     label,
-                    #     (x1, y1 - 10),
-                    #     cv2.FONT_HERSHEY_SIMPLEX,
-                    #     0.5,
-                    #     (0, 255, 0),
-                    #     2
-                    # )
-
-                polyp_frame.append((fr, det_conf, cls_conf))
-                
+                        
         out.write(annotated)
         pbar.set_postfix(polyp_fr = len(polyp_frame))
             
     polyp_frame_map[i] = polyp_frame
+    cap.release()
+    out.release()
+
+torch.cuda.empty_cache()
+    
+joblib.dump(polyp_frame_map, "polyp_frame_map.joblib")
