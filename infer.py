@@ -122,6 +122,17 @@ for video_id in range(start, end+1):
                             det_conf = float(pred_confs[idx])
 
                             cv2.rectangle(annotated, (x1, y1), (x2, y2), (0, 255, 0), 3)
+                            
+                            label = f"Polyp det:{det_conf:.2f} cls:{cls_conf:.2f}"
+                            cv2.putText(
+                                annotated,
+                                label,
+                                (x1, y1 - 10),
+                                cv2.FONT_HERSHEY_SIMPLEX,
+                                0.5,
+                                (0, 255, 0),
+                                2
+                            )
 
                             current_boxes.append((x1, y1, x2, y2, det_conf, cls_conf))
                         
