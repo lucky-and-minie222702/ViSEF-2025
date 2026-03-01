@@ -54,11 +54,9 @@ for video_id in range(start, end+1):
     fr = 0    
 
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    cap.set(cv2.CAP_PROP_POS_FRAMES, 14000)
     pbar = tqdm(range(total_frames), ncols = 100, desc = f"Video {video_id}")
     for _ in pbar:
-        if fr < 14000:
-            continue
-            
         polyp_frame = []
         annotated_frame = []
 
@@ -66,6 +64,7 @@ for video_id in range(start, end+1):
         fr += 1
         if not ret:
             break
+            
         
         if fr == 14300:
             break
