@@ -51,13 +51,14 @@ for video_id in range(start, end+1):
     #     r = cls_model(np.zeros((224, 224, 3)), verbose=False)
     #     r[0].plot()
 
-    polyp_frame = []
-    annotated_frame = []
     fr = 0    
 
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     pbar = tqdm(range(total_frames), ncols = 100, desc = f"Video {video_id}")
     for _ in pbar:
+        polyp_frame = []
+        annotated_frame = []
+
         ret, frame = cap.read()
         fr += 1
         if not ret:
@@ -151,5 +152,5 @@ for video_id in range(start, end+1):
     out.release()
 
 torch.cuda.empty_cache()
-    
+print(annotated_frame_map, annotated_frame)
 joblib.dump(annotated_frame_map, "annotated_frame_map.joblib")
