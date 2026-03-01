@@ -102,7 +102,7 @@ for video_id in range(start, end+1):
 
                         cls_result = cls_model.predict(
                             source=crop,
-                            imgsz=96,
+                            imgsz=128,
                             verbose=False
                         )[0]
 
